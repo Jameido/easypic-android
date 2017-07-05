@@ -13,6 +13,7 @@
 package com.spikes.easyphotopicker;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -25,6 +26,7 @@ import android.support.annotation.RequiresApi;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.util.Pair;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -92,12 +94,11 @@ public class ActivityEasyCameraPicker {
 
         @Override
         public void onPermissionsDenied(String[] permissions) {
-            checkPermissions();
+            openPicker(mFilename);
         }
     };
 
     /**
-     *
      * @param activity the activity that calls the {@link ActivityEasyCameraPicker}
      * @param provider the project file provider
      */
@@ -123,7 +124,7 @@ public class ActivityEasyCameraPicker {
         mOnResult = onResult;
     }
 
-    public void onDestroy(){
+    public void onDestroy() {
         mActivity = null;
     }
 
@@ -172,68 +173,34 @@ public class ActivityEasyCameraPicker {
         }
 
         if (permissionsDenied.size() > 0) {
-            checkPermissions();
             mOnPermissionResult.onPermissionsDenied(permissionsDenied.toArray(new String[permissionsDenied.size()]));
         } else {
             mOnPermissionResult.onPermissionsGranted();
         }
     }
 
-    private boolean checkPermissions() {
-        final List<String> permissionsList = new ArrayList<>();
-        boolean rationalePermissions = false;
-        String permissionsMessage = "";
 
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
-            if (!PermissionsCompat.isPermissionGranted(mActivity, Manifest.permission.CAMERA)) {
-                permissionsList.add(Manifest.permission.CAMERA);
-                permissionsMessage += mActivity.getString(R.string.camera_permission_rationale);
-                rationalePermissions = mActivity.shouldShowRequestPermissionRationale(Manifest.permission.READ_CONTACTS);
-            }
-
-            boolean storagePermissionGranted = true;
-
-            if (!PermissionsCompat.isPermissionGranted(mActivity, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                permissionsList.add(Manifest.permission.READ_EXTERNAL_STORAGE);
-                storagePermissionGranted = false;
-                rationalePermissions = mActivity.shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE) || rationalePermissions;
-            }
-
-            if (!PermissionsCompat.isPermissionGranted(mActivity, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                permissionsList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-                storagePermissionGranted = false;
-                rationalePermissions = mActivity.shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE) || rationalePermissions;
-            }
-
-            //We add a single message both for read and write permissions
-            if (!storagePermissionGranted) {
-                permissionsMessage += mActivity.getString(R.string.storage_permission_rationale);
-            }
-
-            if (permissionsList.size() > 0) {
-                if (rationalePermissions) {
-                    showSnackBar(
-                            permissionsMessage,
-                            Snackbar.LENGTH_INDEFINITE,
-                            mActivity.getString(android.R.string.ok),
-                            new View.OnClickListener() {
-                                @RequiresApi(api = Build.VERSION_CODES.M)
-                                @Override
-                                public void onClick(View view) {
-                                    requestPermissions(permissionsList.toArray(new String[permissionsList.size()]));
-                                }
-                            }
-                    );
-                } else {
-                    requestPermissions(permissionsList.toArray(new String[permissionsList.size()]));
-                }
-                return false;
-            }
+    @TargetApi(Build.VERSION_CODES.M)
+    private void askPermissions(final Pair<String[], String> missingPermissions) {
+        if (TextUtils.isEmpty(missingPermissions.second)) {
+            showSnackBar(
+                    missingPermissions.second,
+                    Snackbar.LENGTH_INDEFINITE,
+                    mActivity.getString(android.R.string.ok),
+                    new View.OnClickListener() {
+                        @RequiresApi(api = Build.VERSION_CODES.M)
+                        @Override
+                        public void onClick(View view) {
+                            requestPermissions(missingPermissions.first);
+                        }
+                    }
+            );
+        } else {
+            requestPermissions(missingPermissions.first);
         }
-        return true;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
+    @TargetApi(Build.VERSION_CODES.M)
     protected void requestPermissions(String[] permissions) {
         mActivity.requestPermissions(permissions, mPermissionCode);
     }
@@ -253,14 +220,18 @@ public class ActivityEasyCameraPicker {
         mSnackbar.show();
     }
 
-    protected String getTempFilename(){
+    protected String getTempFilename() {
         return "temp" + mFilename;
     }
 
     public void openPicker(String filename) {
-        if (checkPermissions()) {
+        Pair<String[], String> missingPermissions = CameraUtils.checkPermissions(mActivity);
+
+        if (missingPermissions.first.length == 0) {
             setFilename(filename);
             startIntentChooser();
+        }else {
+            askPermissions(missingPermissions);
         }
     }
 
@@ -271,11 +242,11 @@ public class ActivityEasyCameraPicker {
             Toast.makeText(mActivity, R.string.error_creating_file, Toast.LENGTH_SHORT).show();
         }
     }
-    
-    public void setFilename(String filename){
-        if(TextUtils.isEmpty(filename)){
+
+    public void setFilename(String filename) {
+        if (TextUtils.isEmpty(filename)) {
             filename = DEFAULT_FILENAME;
-        }else if(filename.endsWith(".jpg")){
+        } else if (filename.endsWith(".jpg")) {
             filename = filename.replace(".jpg", "");
         }
         mFilename = filename;
@@ -293,5 +264,11 @@ public class ActivityEasyCameraPicker {
         void onPermissionsGranted();
 
         void onPermissionsDenied(String[] permissions);
+    }
+
+    public interface OnPermissionCheckResult {
+        void onSuccess();
+
+        void onFailure(String[] missingPermissions, boolean rationale, String rationaleMessage);
     }
 }

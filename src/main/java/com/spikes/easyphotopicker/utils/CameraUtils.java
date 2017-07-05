@@ -12,6 +12,7 @@
 
 package com.spikes.easyphotopicker.utils;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -21,8 +22,10 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Parcelable;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
+import android.support.v4.util.Pair;
 
 import com.spikes.easyphotopicker.R;
 
@@ -147,5 +150,43 @@ public class CameraUtils {
         }
 
         return intents;
+    }
+
+
+    @NonNull
+    public static Pair<String[], String> checkPermissions(Activity activity) {
+        final List<String> permissionsList = new ArrayList<>();
+        String permissionsMessage = "";
+
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
+            if (!PermissionsCompat.isPermissionGranted(activity, Manifest.permission.CAMERA)) {
+                permissionsList.add(Manifest.permission.CAMERA);
+                if (activity.shouldShowRequestPermissionRationale(Manifest.permission.READ_CONTACTS)) {
+                    permissionsMessage += activity.getString(R.string.camera_permission_rationale);
+                }
+            }
+
+            boolean askStorageRationale = false;
+
+            if (!PermissionsCompat.isPermissionGranted(activity, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                permissionsList.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+                askStorageRationale = activity.shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            }
+
+            if (!PermissionsCompat.isPermissionGranted(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                permissionsList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                askStorageRationale = activity.shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            }
+
+            //We add a single message both for read and write permissions
+            if (askStorageRationale) {
+                permissionsMessage += activity.getString(R.string.storage_permission_rationale);
+            }
+
+            if (permissionsList.size() > 0) {
+                return new Pair<>(permissionsList.toArray(new String[permissionsList.size()]), permissionsMessage);
+            }
+        }
+        return new Pair<>(new String[0], "");
     }
 }
