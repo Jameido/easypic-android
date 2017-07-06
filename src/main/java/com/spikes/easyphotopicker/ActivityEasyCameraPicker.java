@@ -183,6 +183,8 @@ public class ActivityEasyCameraPicker {
     @TargetApi(Build.VERSION_CODES.M)
     private void askPermissions(final Pair<String[], String> missingPermissions) {
         if (TextUtils.isEmpty(missingPermissions.second)) {
+            requestPermissions(missingPermissions.first);
+        } else {
             showSnackBar(
                     missingPermissions.second,
                     Snackbar.LENGTH_INDEFINITE,
@@ -195,8 +197,6 @@ public class ActivityEasyCameraPicker {
                         }
                     }
             );
-        } else {
-            requestPermissions(missingPermissions.first);
         }
     }
 
