@@ -32,9 +32,6 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import pro.eluzivespikes.easyphotopicker.utils.CameraUtils;
-import pro.eluzivespikes.easyphotopicker.utils.FileUtils;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -72,6 +69,7 @@ public class ActivityEasyPhotoPicker {
     public static final String DEFAULT_FILENAME = "easy_photo_picker_picture.jpg";
     private static final String TAG = ActivityEasyPhotoPicker.class.getSimpleName();
     private static final int REQUEST_RESULT_CAMERA_GALLERY_DEFAULT = 300;
+    private static final int DEFAULT_PICTURE_SIZE = 0;
 
     protected int mRequestCode = REQUEST_RESULT_CAMERA_GALLERY_DEFAULT;
     protected int mPermissionCode = PERMISSION_CAMERA_STORAGE;
@@ -81,6 +79,7 @@ public class ActivityEasyPhotoPicker {
     protected String mFilename;
     protected String mProvider;
     protected boolean mShowGallery = true;
+    private int mPictureSize = DEFAULT_PICTURE_SIZE;
 
 
     private OnResult mOnResult;
@@ -106,8 +105,14 @@ public class ActivityEasyPhotoPicker {
         mShowGallery = showGallery;
     }
 
-    public void setRequestCode(int requestCode) {
-        mRequestCode = requestCode;
+    /**
+     * Sets the requested size for the bigger side of the picture, 0 if no compression is required
+     *
+     * @param aPictureSize the requested size (0 if no compression is required)
+     */
+    public void setPictureSize(int aPictureSize) {
+
+        mPictureSize = aPictureSize;
     }
 
     public void setCoordinatorLayout(CoordinatorLayout coordinatorLayout) {
@@ -122,10 +127,23 @@ public class ActivityEasyPhotoPicker {
         mOnResult = onResult;
     }
 
+    /**
+     * Removes the activity reference when it gets destroyed
+     * Must be called in {@link Activity#onDestroy()} to avoid memory leaks
+     */
     public void onDestroy() {
         mActivity = null;
     }
 
+    /**
+     * Called from {@link Activity#onActivityResult(int, int, Intent)} and if the request code
+     * matches with {@link #mRequestCode} gets the image, compresses it if needed and copies it
+     * in the internal storage
+     *
+     * @param requestCode the result request code
+     * @param resultCode  the result result code
+     * @param data        the data from the result
+     */
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == mRequestCode) {
             if (resultCode == Activity.RESULT_OK) {
@@ -138,8 +156,12 @@ public class ActivityEasyPhotoPicker {
                 try {
                     Uri uriFileSrc = isCamera ? mOutputFileUri : data.getData();
 
-                    File fileDest = FileUtils.getPictureFile(mActivity, mFilename);
-                    FileUtils.compressAndSavePicture(mActivity, uriFileSrc, fileDest, 400);
+                    File fileDest = FileUtils.createPictureFile(mActivity, mFilename);
+                    if (mPictureSize > 0) {
+                        FileUtils.compressAndSavePicture(mActivity, uriFileSrc, fileDest, mPictureSize);
+                    } else {
+                        FileUtils.copyUriToFile(mActivity, uriFileSrc, fileDest);
+                    }
 
                     if (mOnResult != null) {
                         mOnResult.onSuccess(fileDest);
@@ -148,7 +170,7 @@ public class ActivityEasyPhotoPicker {
                     Toast.makeText(mActivity, R.string.error_creating_file, Toast.LENGTH_SHORT).show();
                 }
             } else {
-                FileUtils.deleteFileFromUri(mOutputFileUri, mActivity);
+                FileUtils.deleteFileFromUri(mActivity, mOutputFileUri);
             }
         }
     }
@@ -228,7 +250,7 @@ public class ActivityEasyPhotoPicker {
         if (missingPermissions.first.length == 0) {
             setFilename(filename);
             startIntentChooser();
-        }else {
+        } else {
             askPermissions(missingPermissions);
         }
     }

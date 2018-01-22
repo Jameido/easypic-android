@@ -1,0 +1,85 @@
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
+
+version '0.0.1'
+group 'pro.eluzivespikes'
+
+bintray {
+    user = project.hasProperty('bintrayUser')
+    key = project.hasProperty('bintrayApiKey')
+    publications = ['Development']
+    configurations = ['archives']
+    override = true
+    pkg {
+        repo = 'android-libraries'
+        name = 'easy-photo-picker'
+        licenses = ['MIT']
+        vcsUrl = 'https://github.com/Jameido/easy-photo-picker-android.git'
+        version {
+            name = this.version
+            desc = "Easy Photo Picker ${this.version}"
+            released = new Date()
+            vcsTag = this.version
+        }
+    }
+}
+
+// Create the pom configuration:
+def pomConfig = {
+
+    developers {
+        developer {
+            id "jameido"
+            name "Luca Rossi"
+            email "rossiluca.dev@gmail.com"
+        }
+    }
+
+    licenses {
+        license {
+            name "The MIT License"
+            url "https://github.com/Jameido/easy-photo-picker-android/blob/dev/LICENSE"
+            distribution "repo"
+        }
+    }
+
+    scm {
+        connection "https://github.com/Jameido/easy-photo-picker-android.git"
+        developerConnection "https://github.com/Jameido/easy-photo-picker-android.git"
+        url "https://github.com/Jameido/easy-photo-picker-android"
+
+    }
+}
+
+publishing {
+    publications {
+        Development(MavenPublication) {
+
+            artifact("$buildDir/outputs/aar/easyphotopicker-release.aar")
+            groupId this.group
+            artifactId 'easy-photo-picker'
+            version this.version
+
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('description', 'A module for Android that makes taking pictures with camera or from the gallery easy as taking a glass of water.')
+                root.appendNode('name', 'easy-photo-picker')
+                root.appendNode('url', 'https://github.com/Jameido/easy-photo-picker-android')
+                root.children().last() + pomConfig
+            }
+
+            pom.withXml {
+                // Iterate over the implementation dependencies (we don't want the test ones), adding a <dependency> node for each
+                configurations.implementation.allDependencies.each {
+                    // Ensure dependencies such as fileTree are not included.
+                    if (it.name != 'unspecified') {
+                        def dependencyNode = dependenciesNode.appendNode('dependency')
+                        dependencyNode.appendNode('groupId', it.group)
+                        dependencyNode.appendNode('artifactId', it.name)
+                        dependencyNode.appendNode('version', it.version)
+                    }
+                }
+            }
+        }
+    }
+}

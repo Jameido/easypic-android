@@ -15,8 +15,6 @@ package pro.eluzivespikes.easyphotopicker;
 import android.support.v4.app.Fragment;
 import android.widget.Toast;
 
-import pro.eluzivespikes.easyphotopicker.utils.CameraUtils;
-
 import java.io.IOException;
 
 /**

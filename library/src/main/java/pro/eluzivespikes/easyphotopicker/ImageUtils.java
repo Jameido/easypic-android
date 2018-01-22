@@ -10,13 +10,14 @@
  *
  */
 
-package pro.eluzivespikes.easyphotopicker.utils;
+package pro.eluzivespikes.easyphotopicker;
 
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.VectorDrawable;
@@ -24,8 +25,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.media.ExifInterface;
 import android.support.v4.content.ContextCompat;
-
-import com.bumptech.glide.load.resource.bitmap.TransformationUtils;
+import android.util.Log;
 
 import java.io.IOException;
 
@@ -34,7 +34,12 @@ import java.io.IOException;
  */
 
 public class ImageUtils {
+    private static final String TAG = "ImageUtils";
 
+    /**
+     * @param vectorDrawable
+     * @return
+     */
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private static Bitmap getBitmap(VectorDrawable vectorDrawable) {
         Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(),
@@ -45,6 +50,11 @@ public class ImageUtils {
         return bitmap;
     }
 
+    /**
+     * @param context
+     * @param drawableId
+     * @return
+     */
     public static Bitmap getBitmap(Context context, int drawableId) {
         Drawable drawable = ContextCompat.getDrawable(context, drawableId);
         if (drawable instanceof BitmapDrawable) {
@@ -56,6 +66,13 @@ public class ImageUtils {
         }
     }
 
+    /**
+     * @param c
+     * @param uri
+     * @param requiredSize
+     * @return
+     * @throws IOException
+     */
     public static Bitmap decodeAndResizeImageUri(Context c, Uri uri, final int requiredSize)
             throws IOException {
         BitmapFactory.Options o = new BitmapFactory.Options();
@@ -93,14 +110,28 @@ public class ImageUtils {
 
         switch (orientation) {
             case ExifInterface.ORIENTATION_ROTATE_90:
-                return TransformationUtils.rotateImage(img, 90);
+                return rotateImage(img, 90);
             case ExifInterface.ORIENTATION_ROTATE_180:
-                return TransformationUtils.rotateImage(img, 180);
+                return rotateImage(img, 180);
             case ExifInterface.ORIENTATION_ROTATE_270:
-                return TransformationUtils.rotateImage(img, 270);
+                return rotateImage(img, 270);
             default:
                 return img;
         }
+    }
+
+    public static Bitmap rotateImage(Bitmap source, int rotationDegrees) {
+        Bitmap result = source;
+        try {
+            if (rotationDegrees != 0) {
+                Matrix matrix = new Matrix();
+                matrix.setRotate(rotationDegrees);
+                result = Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error while ritating image", e);
+        }
+        return result;
     }
 
 

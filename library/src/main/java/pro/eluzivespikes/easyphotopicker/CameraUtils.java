@@ -10,7 +10,7 @@
  *
  */
 
-package pro.eluzivespikes.easyphotopicker.utils;
+package pro.eluzivespikes.easyphotopicker;
 
 import android.Manifest;
 import android.app.Activity;
@@ -32,8 +32,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import pro.eluzivespikes.easyphotopicker.R;
-
 /**
  * Created by Luca Rossi on 05/07/2017.
  */
@@ -41,20 +39,20 @@ import pro.eluzivespikes.easyphotopicker.R;
 public class CameraUtils {
 
     /**
-     * Starts a camera/gallery selector and returns the output file uri
+     * Starts a camera/gallery selector and returns the output file uri.
+     * If the file has been successfully created start the intent chooser from the given fragment.
      *
-     * @param context
+     * @param context     the given context
      * @param fragment    the fragment to start the selector from
-     * @param authority   the fileprovider package
+     * @param authority   the file provider package
      * @param fileName    the requested name for the file
      * @param requestCode request code for the activity result
      * @return the intent chooser
-     * @throws IOException
+     * @throws IOException thrown if an error happens while creating the temp file
      */
-    public static Uri startIntentChooser(Context context, Fragment fragment, String authority, String fileName, int requestCode, boolean showGallery) throws IOException {
+    public static Uri startIntentChooser(final Context context, Fragment fragment, String authority, String fileName, int requestCode, boolean showGallery) throws IOException {
         Uri outputFileUri = null;
-        File photoFile = FileUtils.getPictureTempFile(context, fileName);
-        // Continue only if the File was successfully created
+        File photoFile = FileUtils.createPictureTempFile(context, fileName);
         if (photoFile != null) {
             outputFileUri = FileProvider.getUriForFile(
                     context,
@@ -66,18 +64,18 @@ public class CameraUtils {
     }
 
     /**
-     * Starts a camera/gallery selector and returns the output file uri
+     * Starts a camera/gallery selector and returns the output file uri.
      *
      * @param activity    the activity to start the selector from
-     * @param authority   the fileprovider package
+     * @param authority   the file provider package
      * @param fileName    the requested name for the file
      * @param requestCode request code for the activity result
      * @return the intent chooser
-     * @throws IOException
+     * @throws IOException thrown if an error happens while creating the temp file
      */
     public static Uri startIntentChooser(Activity activity, String authority, String fileName, int requestCode, boolean showGallery) throws IOException {
         Uri outputFileUri = null;
-        File photoFile = FileUtils.getPictureTempFile(activity, fileName);
+        File photoFile = FileUtils.createPictureTempFile(activity, fileName);
         // Continue only if the File was successfully created
         if (photoFile != null) {
             outputFileUri = FileProvider.getUriForFile(
@@ -89,7 +87,18 @@ public class CameraUtils {
         return outputFileUri;
     }
 
-    private static Intent getIntentChooser(Context context, Uri outputFileUri, boolean showGallery) throws IOException {
+    /**
+     * Puts together the results of {@link #getGalleryIntents(Context)} and
+     * {@link #getCameraIntents(Context, Uri)} to form and intent used to show the
+     * chooser to the user
+     *
+     * @param context       the given context
+     * @param outputFileUri the uri where store the image
+     * @param showGallery   if gallery apps should be included
+     * @return intent to display the chooser
+     * @throws IOException thrown if an error happens while creating the temp file
+     */
+    private static Intent getIntentChooser(final Context context, Uri outputFileUri, boolean showGallery) throws IOException {
 
         List<Intent> selectorIntents = new ArrayList<>();
         selectorIntents.addAll(getCameraIntents(context, outputFileUri));
@@ -112,8 +121,14 @@ public class CameraUtils {
     }
 
 
-    private static List<Intent> getCameraIntents(Context context, Uri outputFileUri) {
-        // Add all camera apps as options
+    /**
+     * Builds a list of intents for all the camera apps installed on the device
+     *
+     * @param context       the given context
+     * @param outputFileUri the uri where the file will be saved in
+     * @return the intents used to launch a camera app
+     */
+    private static List<Intent> getCameraIntents(final Context context, Uri outputFileUri) {
         final List<Intent> cameraIntents = new ArrayList<>();
         final Intent captureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         final List<ResolveInfo> listCam = context.getPackageManager().queryIntentActivities(captureIntent, 0);
@@ -130,7 +145,14 @@ public class CameraUtils {
         return cameraIntents;
     }
 
-    private static List<Intent> getGalleryIntents(Context context) {
+    /**
+     * Builds a list of intents for all the gallery apps installed on the device
+     * Documents app are removed from the list
+     *
+     * @param context the given context
+     * @return the intents used to launch a gallery app
+     */
+    private static List<Intent> getGalleryIntents(final Context context) {
         // Add all gallery apps as options
         List<Intent> intents = new ArrayList<>();
         Intent galleryIntent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -139,7 +161,7 @@ public class CameraUtils {
 
         for (ResolveInfo res : listGallery) {
             //We remove the documents app
-            if("com.android.documentsui.DocumentsActivity".equals(res.activityInfo.name)){
+            if ("com.android.documentsui.DocumentsActivity".equals(res.activityInfo.name)) {
                 continue;
             }
 
@@ -153,6 +175,12 @@ public class CameraUtils {
     }
 
 
+    /**
+     * Checks if all the necessary permissions have been given and returns the ones that
+     * still need to be granted by the user
+     * @param activity the activity from which the picker is called
+     * @return the loist of missing permissions
+     */
     @NonNull
     public static Pair<String[], String> checkPermissions(Activity activity) {
         final List<String> permissionsList = new ArrayList<>();

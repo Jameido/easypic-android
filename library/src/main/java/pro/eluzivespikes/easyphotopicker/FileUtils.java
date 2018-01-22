@@ -10,7 +10,7 @@
  *
  */
 
-package pro.eluzivespikes.easyphotopicker.utils;
+package pro.eluzivespikes.easyphotopicker;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -33,8 +33,17 @@ import java.io.OutputStream;
 
 public class FileUtils {
 
-    public static File getPictureTempFile(Context context, @NonNull String filename) throws IOException {
-        if(filename.endsWith(".jpg")){
+    /**
+     * Creates a temporary jpg file with the given name
+     * If the name contains the extension it removes it
+     *
+     * @param context  the given context
+     * @param filename the name of the created file
+     * @return the created picture file
+     * @throws IOException thrown if an error happens while creating the temp file
+     */
+    public static File createPictureTempFile(Context context, @NonNull String filename) throws IOException {
+        if (filename.endsWith(".jpg")) {
             filename = filename.replace(".jpg", "");
         }
         File tempProfilePic = File.createTempFile(
@@ -46,8 +55,17 @@ public class FileUtils {
         return tempProfilePic;
     }
 
-    public static File getPictureFile(Context context, @NonNull String filename) throws IOException {
-        if(filename.endsWith(".jpg")){
+    /**
+     * Creates a jpg file with the given name
+     * If the name contains the extension it removes it
+     *
+     * @param context  the given context
+     * @param filename the name of the created file
+     * @return the created picture file
+     * @throws IOException thrown if an error happens while creating the file
+     */
+    public static File createPictureFile(Context context, @NonNull String filename) throws IOException {
+        if (filename.endsWith(".jpg")) {
             filename = filename.replace(".jpg", "");
         }
         return new File(
@@ -58,7 +76,17 @@ public class FileUtils {
         );
     }
 
-
+    /**
+     * Takes the image from the given uri, scales it down to the given size and saves the result in
+     * the given file
+     *
+     * @param context      the given context
+     * @param src          the source image url
+     * @param dst          the destination file
+     * @param requiredSize the scale size
+     * @return the compression result
+     * @throws IOException thrown if an error happens
+     */
     public static boolean compressAndSavePicture(Context context, Uri src, File dst, int requiredSize) throws IOException {
         if (src.getPath().equals(dst.getAbsolutePath())) {
             return true;
@@ -67,8 +95,7 @@ public class FileUtils {
             FileOutputStream out = null;
             try {
                 out = new FileOutputStream(dst);
-                bmp.compress(Bitmap.CompressFormat.JPEG, 100, out); // bmp is your Bitmap instance
-                // PNG is a lossless format, the compression factor (100) is ignored
+                bmp.compress(Bitmap.CompressFormat.JPEG, 100, out);
             } catch (IOException e) {
                 e.printStackTrace();
                 return false;
@@ -87,7 +114,16 @@ public class FileUtils {
         }
     }
 
-    public static boolean copyUriToFile(Uri src, File dst, Context context) throws IOException {
+    /**
+     * Copies the content of the file with the given url in the destination one
+     *
+     * @param context the given context
+     * @param src     the source file url
+     * @param dst     the destination file
+     * @return the v result
+     * @throws IOException thrown if an error happens
+     */
+    static boolean copyUriToFile(Context context, Uri src, File dst) throws IOException {
         if (src.getPath().equals(dst.getAbsolutePath())) {
             return true;
         } else {
@@ -126,6 +162,14 @@ public class FileUtils {
         return true;
     }
 
+    /**
+     * Copies the content of the file with the given url in the destination one
+     *
+     * @param src the source file
+     * @param dst the destination file
+     * @return the copy result
+     * @throws IOException thrown if an error happens
+     */
     public static boolean copyFile(File src, File dst) throws IOException {
         if (src.getAbsolutePath().equals(dst.getAbsolutePath())) {
             return true;
@@ -165,6 +209,12 @@ public class FileUtils {
         return true;
     }
 
+    /**
+     * @param inputStream
+     * @param dst
+     * @return
+     * @throws IOException
+     */
     public static boolean copyFile(InputStream inputStream, File dst) throws IOException {
         OutputStream outputStream = null;
 
@@ -198,7 +248,13 @@ public class FileUtils {
         return true;
     }
 
-    public static void deleteFileFromUri(Uri fileUri, Context context) {
+    /**
+     * Deletes the file with the give uri
+     *
+     * @param fileUri the uri to delete
+     * @param context the given context
+     */
+    public static void deleteFileFromUri(Context context, Uri fileUri) {
         try {
             int result = context.getContentResolver().delete(fileUri, null, null);
         } catch (Exception e) {
@@ -209,7 +265,11 @@ public class FileUtils {
 
     /**
      * When image is returned we get its real path
-     **/
+     *
+     * @param context the given context
+     * @param contentURI uri iof the content
+     * @return returns the real uri
+     */
     public static String getRealPathFromURI(Context context, Uri contentURI) {
         String result;
         Cursor cursor = context.getContentResolver().query(contentURI, null, null, null, null);

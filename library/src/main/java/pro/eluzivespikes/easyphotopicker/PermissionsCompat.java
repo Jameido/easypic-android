@@ -10,7 +10,7 @@
  *
  */
 
-package pro.eluzivespikes.easyphotopicker.utils;
+package pro.eluzivespikes.easyphotopicker;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -22,6 +22,14 @@ import android.os.Build;
 
 public class PermissionsCompat {
 
+    /**
+     * Check if the specified permission has been granted.
+     * If the SDK version is below M returns false (permissions are always granted below M)
+     * Otherwise does the real check
+     * @param context the given context
+     * @param permission the permission code to check
+     * @return if the permission has been already given
+     */
     public static boolean isPermissionGranted(Context context, String permission) {
         return Build.VERSION.SDK_INT < Build.VERSION_CODES.M || context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED;
     }
