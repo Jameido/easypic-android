@@ -30,7 +30,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
@@ -66,7 +65,7 @@ public class ActivityEasyPhotoPicker {
     public static final int PERMISSION_READ_EXTERNAL_STORAGE = 500;
     public static final int PERMISSION_CAMERA_STORAGE = 345;
     public static final int PERMISSION_STORAGE = 450;
-    public static final String DEFAULT_FILENAME = "easy_photo_picker_picture.jpg";
+    public static final String DEFAULT_FILENAME = "easy_photo_picker_picture";
     private static final String TAG = ActivityEasyPhotoPicker.class.getSimpleName();
     private static final int REQUEST_RESULT_CAMERA_GALLERY_DEFAULT = 300;
     private static final int DEFAULT_PICTURE_SIZE = 0;
@@ -82,7 +81,7 @@ public class ActivityEasyPhotoPicker {
     private int mPictureSize = DEFAULT_PICTURE_SIZE;
 
 
-    private OnResult mOnResult;
+    protected OnResultListener mOnResultListener;
     private OnPermissionResult mOnPermissionResult = new OnPermissionResult() {
         @Override
         public void onPermissionsGranted() {
@@ -111,20 +110,26 @@ public class ActivityEasyPhotoPicker {
      * @param aPictureSize the requested size (0 if no compression is required)
      */
     public void setPictureSize(int aPictureSize) {
-
         mPictureSize = aPictureSize;
     }
 
+    /**
+     * Sets the coordinator layout used to display the snackbar when rationale permissions have to
+     * be asked to the user
+     *
+     * @param coordinatorLayout the given coordinator
+     */
     public void setCoordinatorLayout(CoordinatorLayout coordinatorLayout) {
         mCoordinatorLayout = coordinatorLayout;
     }
 
-    public void setOnPermissionResult(OnPermissionResult onPermissionResult) {
-        mOnPermissionResult = onPermissionResult;
-    }
-
-    public void setOnResult(OnResult onResult) {
-        mOnResult = onResult;
+    /**
+     * Set the result listener to be invoked when the picture has been successfully processed
+     *
+     * @param aOnResultListener the result listener
+     */
+    public void setOnResultListener(OnResultListener aOnResultListener) {
+        mOnResultListener = aOnResultListener;
     }
 
     /**
@@ -163,11 +168,14 @@ public class ActivityEasyPhotoPicker {
                         FileUtils.copyUriToFile(mActivity, uriFileSrc, fileDest);
                     }
 
-                    if (mOnResult != null) {
-                        mOnResult.onSuccess(fileDest);
+                    if (mOnResultListener != null) {
+                        mOnResultListener.onPickPhotoSuccess(fileDest);
                     }
                 } catch (Exception ex) {
-                    Toast.makeText(mActivity, R.string.error_creating_file, Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "photo picker", ex);
+                    if (mOnResultListener != null) {
+                        mOnResultListener.onPickPhotoFailure(ex);
+                    }
                 }
             } else {
                 FileUtils.deleteFileFromUri(mActivity, mOutputFileUri);
@@ -175,6 +183,15 @@ public class ActivityEasyPhotoPicker {
         }
     }
 
+    /**
+     * Called from {@link Activity#onRequestPermissionsResult(int, String[], int[])}
+     * and if the request code matches with {@link #mPermissionCode} checks if the permissions have
+     * been given and calls the appropriate {@link OnResultListener} method
+     *
+     * @param requestCode  the permissions request code
+     * @param permissions  the permissions asked
+     * @param grantResults the grant permissions results
+     */
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         if (requestCode != mPermissionCode) {
             return;
@@ -200,6 +217,9 @@ public class ActivityEasyPhotoPicker {
     }
 
 
+    /**
+     * @param missingPermissions
+     */
     @TargetApi(Build.VERSION_CODES.M)
     private void askPermissions(final Pair<String[], String> missingPermissions) {
         if (TextUtils.isEmpty(missingPermissions.second)) {
@@ -244,26 +264,44 @@ public class ActivityEasyPhotoPicker {
         return "temp" + mFilename;
     }
 
+    /**
+     * If the user has given all the necessary permissions opens the picker
+     * If not asks the permissions
+     *
+     * @param filename
+     */
     public void openPicker(String filename) {
         Pair<String[], String> missingPermissions = CameraUtils.checkPermissions(mActivity);
+        setFilename(filename);
 
         if (missingPermissions.first.length == 0) {
-            setFilename(filename);
             startIntentChooser();
         } else {
             askPermissions(missingPermissions);
         }
     }
 
+    /**
+     * Shows the application chooser to the user
+     */
     protected void startIntentChooser() {
         try {
             mOutputFileUri = CameraUtils.startIntentChooser(mActivity, mProvider, getTempFilename(), mRequestCode, mShowGallery);
         } catch (IOException ex) {
-            Toast.makeText(mActivity, R.string.error_creating_file, Toast.LENGTH_SHORT).show();
+            Log.e(TAG, "photo picker", ex);
+            if (mOnResultListener != null) {
+                mOnResultListener.onPickPhotoFailure(ex);
+            }
         }
     }
 
-    public void setFilename(String filename) {
+    /**
+     * Sets the name of the resulting photo file
+     * If it's empty the default one will be used instead
+     * Also removes the possible jpg extension
+     * @param filename name of the
+     */
+    private void setFilename(String filename) {
         if (TextUtils.isEmpty(filename)) {
             filename = DEFAULT_FILENAME;
         } else if (filename.endsWith(".jpg")) {
@@ -276,8 +314,10 @@ public class ActivityEasyPhotoPicker {
         return mRequestCode;
     }
 
-    public interface OnResult {
-        void onSuccess(File file);
+    public interface OnResultListener {
+        void onPickPhotoSuccess(File file);
+
+        void onPickPhotoFailure(Exception exception);
     }
 
     public interface OnPermissionResult {

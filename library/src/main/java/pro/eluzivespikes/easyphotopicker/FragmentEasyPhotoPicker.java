@@ -13,7 +13,7 @@
 package pro.eluzivespikes.easyphotopicker;
 
 import android.support.v4.app.Fragment;
-import android.widget.Toast;
+import android.util.Log;
 
 import java.io.IOException;
 
@@ -25,6 +25,8 @@ import java.io.IOException;
  */
 
 public class FragmentEasyPhotoPicker extends ActivityEasyPhotoPicker {
+
+    private static final String TAG = "FragmentEasyPhotoPicker";
 
     private Fragment mFragment;
 
@@ -49,7 +51,10 @@ public class FragmentEasyPhotoPicker extends ActivityEasyPhotoPicker {
         try {
             mOutputFileUri = CameraUtils.startIntentChooser(mActivity, mFragment, mProvider, getTempFilename(), mRequestCode, mShowGallery);
         } catch (IOException ex) {
-            Toast.makeText(mActivity, R.string.error_creating_file, Toast.LENGTH_SHORT).show();
+            Log.e(TAG, "photo picker", ex);
+            if(mOnResultListener != null){
+                mOnResultListener.onPickPhotoFailure(ex);
+            }
         }
     }
 }
