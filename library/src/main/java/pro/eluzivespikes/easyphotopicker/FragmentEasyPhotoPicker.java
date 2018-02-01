@@ -35,8 +35,8 @@ public class FragmentEasyPhotoPicker extends ActivityEasyPhotoPicker {
      * @param fragment the fragment that calls the {@link ActivityEasyPhotoPicker}
      * @param provider the project file provider
      */
-    public FragmentEasyPhotoPicker(Fragment fragment, String provider, boolean showGallery) {
-        super(fragment.getActivity(), provider, showGallery);
+    public FragmentEasyPhotoPicker(Fragment fragment, String provider) {
+        super(fragment.getActivity(), provider);
         mFragment = fragment;
     }
 

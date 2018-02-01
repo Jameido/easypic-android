@@ -77,7 +77,7 @@ public class ActivityEasyPhotoPicker {
     protected Uri mOutputFileUri;
     protected String mFilename;
     protected String mProvider;
-    protected boolean mShowGallery = true;
+    protected boolean mShowGallery = false;
     private int mPictureSize = DEFAULT_PICTURE_SIZE;
 
 
@@ -98,10 +98,9 @@ public class ActivityEasyPhotoPicker {
      * @param activity the activity that calls the {@link ActivityEasyPhotoPicker}
      * @param provider the project file provider
      */
-    public ActivityEasyPhotoPicker(Activity activity, String provider, boolean showGallery) {
+    public ActivityEasyPhotoPicker(Activity activity, String provider) {
         mActivity = activity;
         mProvider = provider;
-        mShowGallery = showGallery;
     }
 
     /**
@@ -157,25 +156,25 @@ public class ActivityEasyPhotoPicker {
                     String action = data.getAction();
                     isCamera = MediaStore.ACTION_IMAGE_CAPTURE.equals(action);
                 }
-
+                File fileDest = null;
                 try {
                     Uri uriFileSrc = isCamera ? mOutputFileUri : data.getData();
 
-                    File fileDest = FileUtils.createPictureFile(mActivity, mFilename);
+                    fileDest = FileUtils.createPictureFile(mActivity, mFilename);
                     if (mPictureSize > 0) {
                         FileUtils.compressAndSavePicture(mActivity, uriFileSrc, fileDest, mPictureSize);
                     } else {
                         FileUtils.copyUriToFile(mActivity, uriFileSrc, fileDest);
-                    }
-
-                    if (mOnResultListener != null) {
-                        mOnResultListener.onPickPhotoSuccess(fileDest);
                     }
                 } catch (Exception ex) {
                     Log.e(TAG, "photo picker", ex);
                     if (mOnResultListener != null) {
                         mOnResultListener.onPickPhotoFailure(ex);
                     }
+                }
+
+                if (mOnResultListener != null) {
+                    mOnResultListener.onPickPhotoSuccess(fileDest);
                 }
             } else {
                 FileUtils.deleteFileFromUri(mActivity, mOutputFileUri);
@@ -299,6 +298,7 @@ public class ActivityEasyPhotoPicker {
      * Sets the name of the resulting photo file
      * If it's empty the default one will be used instead
      * Also removes the possible jpg extension
+     *
      * @param filename name of the
      */
     private void setFilename(String filename) {
@@ -308,6 +308,14 @@ public class ActivityEasyPhotoPicker {
             filename = filename.replace(".jpg", "");
         }
         mFilename = filename;
+    }
+
+    public void setRequestCode(int aRequestCode) {
+        mRequestCode = aRequestCode;
+    }
+
+    public void setShowGallery(boolean aShowGallery) {
+        mShowGallery = aShowGallery;
     }
 
     public int getRequestCode() {
@@ -330,5 +338,48 @@ public class ActivityEasyPhotoPicker {
         void onSuccess();
 
         void onFailure(String[] missingPermissions, boolean rationale, String rationaleMessage);
+    }
+
+    public static class Builder {
+
+        private ActivityEasyPhotoPicker mActivityEasyPhotoPicker;
+
+        public Builder(Activity activity, String provider) {
+            mActivityEasyPhotoPicker = new ActivityEasyPhotoPicker(activity, provider);
+        }
+
+        public Builder withResultListener(OnResultListener resultListener) {
+            this.mActivityEasyPhotoPicker.setOnResultListener(resultListener);
+            return this;
+        }
+
+        public Builder withCoordinatorLayout(CoordinatorLayout coordinatorLayout) {
+            this.mActivityEasyPhotoPicker.setCoordinatorLayout(coordinatorLayout);
+            return this;
+        }
+
+        public Builder withPictureSize(int pictureSize) {
+            this.mActivityEasyPhotoPicker.setPictureSize(pictureSize);
+            return this;
+        }
+
+        public Builder withRequestCode(int requestCode) {
+            this.mActivityEasyPhotoPicker.setRequestCode(requestCode);
+            return this;
+        }
+
+        public Builder withGallery(boolean showGallery){
+            this.mActivityEasyPhotoPicker.setShowGallery(showGallery);
+            return this;
+        }
+
+        public Builder withFileName(String fileName) {
+            this.mActivityEasyPhotoPicker.setFilename(fileName);
+            return this;
+        }
+
+        public ActivityEasyPhotoPicker build() {
+            return mActivityEasyPhotoPicker;
+        }
     }
 }
