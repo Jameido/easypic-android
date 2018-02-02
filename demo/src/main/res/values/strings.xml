@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Easy Photo Picker</string>
+    <string name="button_pick">Pick an image!</string>
+    <string name="cd_image_result">The chosen image result</string>
 </resources>
