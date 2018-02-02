@@ -14,12 +14,16 @@ package pro.eluzivespikes.easyphotopicker;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.provider.MediaStore;
+import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.CoordinatorLayout;
@@ -31,8 +35,14 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,6 +89,8 @@ public class ActivityEasyPhotoPicker {
     protected String mProvider;
     protected boolean mShowGallery = false;
     private int mPictureSize = DEFAULT_PICTURE_SIZE;
+    private int[] mModes;
+    private ProcessResultTask mProcessResultTask;
 
 
     protected OnResultListener mOnResultListener;
@@ -98,7 +110,7 @@ public class ActivityEasyPhotoPicker {
      * @param activity the activity that calls the {@link ActivityEasyPhotoPicker}
      * @param provider the project file provider
      */
-    public ActivityEasyPhotoPicker(Activity activity, String provider) {
+    protected ActivityEasyPhotoPicker(Activity activity, String provider) {
         mActivity = activity;
         mProvider = provider;
     }
@@ -137,6 +149,9 @@ public class ActivityEasyPhotoPicker {
      */
     public void onDestroy() {
         mActivity = null;
+        if (mProcessResultTask != null) {
+            mProcessResultTask.cancel(true);
+        }
     }
 
     /**
@@ -156,31 +171,15 @@ public class ActivityEasyPhotoPicker {
                     String action = data.getAction();
                     isCamera = MediaStore.ACTION_IMAGE_CAPTURE.equals(action);
                 }
-                File fileDest = null;
-                try {
-                    Uri uriFileSrc = isCamera ? mOutputFileUri : data.getData();
-
-                    fileDest = FileUtils.createPictureFile(mActivity, mFilename);
-                    if (mPictureSize > 0) {
-                        FileUtils.compressAndSavePicture(mActivity, uriFileSrc, fileDest, mPictureSize);
-                    } else {
-                        FileUtils.copyUriToFile(mActivity, uriFileSrc, fileDest);
-                    }
-                } catch (Exception ex) {
-                    Log.e(TAG, "photo picker", ex);
-                    if (mOnResultListener != null) {
-                        mOnResultListener.onPickPhotoFailure(ex);
-                    }
-                }
-
-                if (mOnResultListener != null) {
-                    mOnResultListener.onPickPhotoSuccess(fileDest);
-                }
+                Uri uriFileSrc = isCamera ? mOutputFileUri : data.getData();
+                mProcessResultTask = new ProcessResultTask();
+                mProcessResultTask.execute(uriFileSrc);
             } else {
                 FileUtils.deleteFileFromUri(mActivity, mOutputFileUri);
             }
         }
     }
+
 
     /**
      * Called from {@link Activity#onRequestPermissionsResult(int, String[], int[])}
@@ -318,14 +317,18 @@ public class ActivityEasyPhotoPicker {
         mShowGallery = aShowGallery;
     }
 
+    public void setModes(int[] aModes) {
+        mModes = aModes;
+    }
+
     public int getRequestCode() {
         return mRequestCode;
     }
 
     public interface OnResultListener {
-        void onPickPhotoSuccess(File file);
+        void onPickPhotoSuccess(@NonNull PickerResult pickerResult);
 
-        void onPickPhotoFailure(Exception exception);
+        void onPickPhotoFailure(@NonNull Exception exception);
     }
 
     public interface OnPermissionResult {
@@ -368,7 +371,7 @@ public class ActivityEasyPhotoPicker {
             return this;
         }
 
-        public Builder withGallery(boolean showGallery){
+        public Builder withGallery(boolean showGallery) {
             this.mActivityEasyPhotoPicker.setShowGallery(showGallery);
             return this;
         }
@@ -378,8 +381,110 @@ public class ActivityEasyPhotoPicker {
             return this;
         }
 
+        public Builder withModes(int... modes) {
+            this.mActivityEasyPhotoPicker.setModes(modes);
+            return this;
+        }
+
         public ActivityEasyPhotoPicker build() {
             return mActivityEasyPhotoPicker;
+        }
+    }
+
+    /**
+     * Used to indicate the type of
+     */
+    @Target({ElementType.FIELD,
+            ElementType.LOCAL_VARIABLE,
+            ElementType.PARAMETER,
+            ElementType.ANNOTATION_TYPE})
+    @IntDef({
+            PickerMode.BITMAP,
+            PickerMode.BYTES,
+            PickerMode.FILE
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface PickerMode {
+        /**
+         * A bitmap representing the image will be returned
+         */
+        int BITMAP = 0;
+        /**
+         * A byte array representing the image will be returned
+         */
+        int BYTES = 1;
+        /**
+         * A file containing the image will be returned
+         */
+        int FILE = 2;
+    }
+
+    public class ProcessResultTask extends AsyncTask<Uri, Void, PickerResult> {
+        Exception mException;
+
+        @Override
+        protected PickerResult doInBackground(Uri... aUris) {
+            PickerResult vPickerResult = new PickerResult();
+            if (aUris.length > 0 && aUris[0] != null) {
+                try {
+                    Bitmap vBitmap = resultBitmap(aUris[0]);
+
+                    for (int vMode : mModes) {
+                        switch (vMode) {
+                            case PickerMode.BITMAP:
+                                vPickerResult.setBitmap(vBitmap);
+                                break;
+                            case PickerMode.BYTES:
+                                vPickerResult.setBytes(resultBytes(vBitmap));
+                                break;
+                            case PickerMode.FILE:
+                                vPickerResult.setFile(resultFile(vBitmap));
+                                break;
+                        }
+                    }
+                } catch (Exception ex) {
+                    Log.e(TAG, "photo picker", ex);
+                    mException = ex;
+                }
+            }
+
+            return vPickerResult;
+        }
+
+        @Override
+        protected void onPostExecute(@NonNull PickerResult aPickerResult) {
+            if (mOnResultListener != null) {
+                if (mException != null) {
+                    mOnResultListener.onPickPhotoFailure(mException);
+                } else {
+                    mOnResultListener.onPickPhotoSuccess(aPickerResult);
+                }
+            }
+        }
+
+
+        private Bitmap resultBitmap(Uri aSourceUri) throws IOException {
+            return ImageUtils.decodeAndResizeImageUri(mActivity, aSourceUri, mPictureSize);
+        }
+
+        private File resultFile(Bitmap aBitmap) throws IOException {
+            FileOutputStream out = null;
+            File vDestFile = FileUtils.createPictureFile(mActivity, mFilename);
+            try {
+                out = new FileOutputStream(vDestFile);
+                aBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            } finally {
+                if (out != null) {
+                    out.close();
+                }
+            }
+            return vDestFile;
+        }
+
+        private byte[] resultBytes(Bitmap aBitmap) {
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            aBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+            return stream.toByteArray();
         }
     }
 }
