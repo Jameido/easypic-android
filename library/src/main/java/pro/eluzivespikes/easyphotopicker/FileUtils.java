@@ -49,7 +49,8 @@ public class FileUtils {
         File tempProfilePic = File.createTempFile(
                 filename,
                 ".jpg",
-                context.getExternalCacheDir());
+                context.getCacheDir()
+                );
         tempProfilePic.deleteOnExit();
 
         return tempProfilePic;
@@ -69,7 +70,7 @@ public class FileUtils {
             filename = filename.replace(".jpg", "");
         }
         return new File(
-                context.getExternalFilesDir(Environment.DIRECTORY_PICTURES).getPath() +
+                context.getFilesDir().getPath() +
                         File.separator +
                         filename +
                         ".jpg"

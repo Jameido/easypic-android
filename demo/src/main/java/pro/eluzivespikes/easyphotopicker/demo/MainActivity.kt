@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity(), EasyPhotoPicker.OnResultListener {
         findViewById<View>(R.id.button_take_picture)
                 .setOnClickListener { mEasyPhotoPicker.openPicker() }
 
-        mEasyPhotoPicker = EasyPhotoPickerBuilder(this, "pro.eluzivespikes.easyphotopicker.demo.fileprovider")
+        mEasyPhotoPicker = EasyPhotoPickerBuilder(this)
                 .withModes(
                         EasyPhotoPicker.PickerMode.BITMAP,
                         EasyPhotoPicker.PickerMode.BYTES,

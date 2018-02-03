@@ -39,56 +39,6 @@ import java.util.List;
 
 public class CameraUtils {
 
-
-    /**
-     * Starts a camera/gallery selector and returns the output file uri.
-     * If the file has been successfully created start the intent chooser from the given fragment.
-     *
-     * @param context     the given context
-     * @param fragment    the fragment to start the selector from
-     * @param authority   the file provider package
-     * @param fileName    the requested name for the file
-     * @param requestCode request code for the activity result
-     * @return the intent chooser
-     * @throws IOException thrown if an error happens while creating the temp file
-     */
-    public static Uri startIntentChooser(final Context context, Fragment fragment, String authority, String fileName, int requestCode, boolean showGallery) throws IOException {
-        Uri outputFileUri = null;
-        File photoFile = FileUtils.createPictureTempFile(context, fileName);
-        if (photoFile != null) {
-            outputFileUri = FileProvider.getUriForFile(
-                    context,
-                    authority,
-                    photoFile);
-            fragment.startActivityForResult(getIntentChooser(context, outputFileUri, showGallery), requestCode);
-        }
-        return outputFileUri;
-    }
-
-    /**
-     * Starts a camera/gallery selector and returns the output file uri.
-     *
-     * @param activity    the activity to start the selector from
-     * @param authority   the file provider package
-     * @param fileName    the requested name for the file
-     * @param requestCode request code for the activity result
-     * @return the intent chooser
-     * @throws IOException thrown if an error happens while creating the temp file
-     */
-    public static Uri startIntentChooser(Activity activity, String authority, String fileName, int requestCode, boolean showGallery) throws IOException {
-        Uri outputFileUri = null;
-        File photoFile = FileUtils.createPictureTempFile(activity, fileName);
-        // Continue only if the File was successfully created
-        if (photoFile != null) {
-            outputFileUri = FileProvider.getUriForFile(
-                    activity,
-                    authority,
-                    photoFile);
-            activity.startActivityForResult(getIntentChooser(activity, outputFileUri, showGallery), requestCode);
-        }
-        return outputFileUri;
-    }
-
     /**
      * Puts together the results of {@link #getGalleryIntents(Context)} and
      * {@link #getCameraIntents(Context, Uri)} to form and intent used to show the
@@ -121,7 +71,6 @@ public class CameraUtils {
 
         return chooserIntent;
     }
-
 
     /**
      * Builds a list of intents for all the camera apps installed on the device

@@ -24,14 +24,12 @@ public class EasyPhotoPickerBuilder {
 
     private EasyPhotoPickerImpl mEasyPhotoPicker;
 
-    public EasyPhotoPickerBuilder(Activity activity, String provider) {
+    public EasyPhotoPickerBuilder(Activity activity) {
         mEasyPhotoPicker = new ActivityEasyPhotoPicker(activity);
-        mEasyPhotoPicker.setProvider(provider);
     }
 
-    public EasyPhotoPickerBuilder(Fragment fragment, String provider) {
+    public EasyPhotoPickerBuilder(Fragment fragment) {
         mEasyPhotoPicker = new FragmentEasyPhotoPicker(fragment);
-        mEasyPhotoPicker.setProvider(provider);
     }
 
     /**

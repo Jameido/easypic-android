@@ -61,7 +61,6 @@ abstract class EasyPhotoPickerImpl implements EasyPhotoPicker {
     private CoordinatorLayout mCoordinatorLayout;
     private Uri mOutputFileUri;
     private String mFilename = DEFAULT_FILENAME;
-    private String mProvider;
     private boolean mShowGallery = false;
     private int mPictureSize = DEFAULT_PICTURE_SIZE;
     private int[] mModes;
@@ -148,15 +147,6 @@ abstract class EasyPhotoPickerImpl implements EasyPhotoPicker {
     }
 
     /**
-     * Sets the provider string used in {@link FileProvider#getUriForFile(Context, String, File)}
-     *
-     * @param provider the string provider.
-     */
-    void setProvider(String provider) {
-        mProvider = provider;
-    }
-
-    /**
      * Returns the uri of the file where the picture is stored.
      *
      * @throws IOException thrown if an error happens while creating the temporary file where store
@@ -168,7 +158,7 @@ abstract class EasyPhotoPickerImpl implements EasyPhotoPicker {
         if (photoFile != null) {
             outputFileUri = FileProvider.getUriForFile(
                     getContext(),
-                    mProvider,
+                    getAuthority(),
                     photoFile);
         }
         return outputFileUri;
@@ -176,6 +166,10 @@ abstract class EasyPhotoPickerImpl implements EasyPhotoPicker {
 
     private String getTempFilename() {
         return "temp_" + mFilename;
+    }
+
+    private String getAuthority() {
+        return getActivity().getApplication().getPackageName() + ".provider";
     }
 
     /**
