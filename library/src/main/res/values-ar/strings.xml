@@ -2,7 +2,6 @@
 <resources>
     <!-- CAMERA -->
     <string name="select_picture_source">حدد مصدر الصورة</string>
-    <string name="camera_permission_rationale">هناك حاجة إلى أذونات الكاميرا لالتقاط صورة.\n</string>
-    <string name="storage_permission_rationale">هناك حاجة إلى أذونات التخزين لحفظ صورة.\n</string>
+    <string name="permission_rationale">هناك حاجة إلى أذونات التخزين و الكاميرا لالتقاط صورة.</string>
     <string name="error_creating_file">حدث خطأ أثناء إنشاء الملف</string>
 </resources>

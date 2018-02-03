@@ -2,7 +2,6 @@
 <resources>
     <!-- CAMERA -->
     <string name="select_picture_source">Scegli sorgente foto</string>
-    <string name="camera_permission_rationale">Fornisci il permesso di usare la fototcamera per scattare la foto. \n</string>
-    <string name="storage_permission_rationale">Fornisci il permesso di scrivere in memoria per salvare la foto. \n</string>
+    <string name="permission_rationale">Per scattare la foto è necessario il permesso di usare la fotocamera e scrivere in memoria.</string>
     <string name="error_creating_file">Errore durante la creazione del file</string>
 </resources>

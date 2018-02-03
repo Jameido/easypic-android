@@ -174,6 +174,10 @@ abstract class EasyPhotoPickerImpl implements EasyPhotoPicker {
         return outputFileUri;
     }
 
+    private String getTempFilename() {
+        return "temp_" + mFilename;
+    }
+
     /**
      * Removes the activity reference when it gets destroyed
      * Must be called in {@link Activity#onDestroy()} to avoid memory leaks.
@@ -233,10 +237,8 @@ abstract class EasyPhotoPickerImpl implements EasyPhotoPicker {
             }
         }
 
-        if (permissionsDenied.size() > 0) {
+        if (permissionsDenied.isEmpty()) {
             startIntentChooser();
-        } else {
-            openPicker();
         }
     }
 
@@ -249,11 +251,11 @@ abstract class EasyPhotoPickerImpl implements EasyPhotoPicker {
      *                           request
      */
     @TargetApi(Build.VERSION_CODES.M)
-    private void askPermissions(final Pair<String[], String> missingPermissions) {
-        if (TextUtils.isEmpty(missingPermissions.second)) {
-            requestPermissions(missingPermissions.first, mPermissionCode);
-        } else {
+    private void askPermissions(@NonNull final Pair<String[], Boolean> missingPermissions) {
+        if (missingPermissions.second) {
             askRationalePermissions(missingPermissions);
+        } else {
+            requestPermissions(missingPermissions.first, mPermissionCode);
         }
     }
 
@@ -263,9 +265,9 @@ abstract class EasyPhotoPickerImpl implements EasyPhotoPicker {
      *
      * @param missingPermissions list of missing permissions with the message to show
      */
-    private void askRationalePermissions(final Pair<String[], String> missingPermissions) {
+    private void askRationalePermissions(final Pair<String[], Boolean> missingPermissions) {
         if (mCoordinatorLayout != null) {
-            Snackbar mSnackbar = Snackbar.make(mCoordinatorLayout, missingPermissions.second, Snackbar.LENGTH_INDEFINITE);
+            Snackbar mSnackbar = Snackbar.make(mCoordinatorLayout, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE);
             TextView tv = mSnackbar.getView().findViewById(R.id.snackbar_text);
             tv.setTextColor(Color.WHITE);
             mSnackbar.setAction(
@@ -281,7 +283,7 @@ abstract class EasyPhotoPickerImpl implements EasyPhotoPicker {
             mSnackbar.show();
         } else {
             new AlertDialog.Builder(getContext())
-                    .setMessage(missingPermissions.second)
+                    .setMessage(R.string.permission_rationale)
                     .setPositiveButton(
                             android.R.string.ok,
                             new DialogInterface.OnClickListener() {
@@ -303,16 +305,12 @@ abstract class EasyPhotoPickerImpl implements EasyPhotoPicker {
         }
     }
 
-    private String getTempFilename() {
-        return "temp_" + mFilename;
-    }
-
     /**
      * If the user has given all the necessary permissions opens the picker
      * If not asks the permissions
      */
     public void openPicker() {
-        Pair<String[], String> missingPermissions = CameraUtils.getMissingPermissions(getActivity());
+        Pair<String[], Boolean> missingPermissions = CameraUtils.getMissingPermissions(getActivity());
 
         if (missingPermissions.first.length == 0) {
             startIntentChooser();
