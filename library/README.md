@@ -1,1 +1,0 @@
-# easy-photo-picker

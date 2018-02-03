@@ -10,7 +10,7 @@
  *
  */
 
-package pro.eluzivespikes.easyphotopicker;
+package pro.eluzivespikes.easypic;
 
 import android.Manifest;
 import android.app.Activity;
@@ -24,11 +24,8 @@ import android.os.Build;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.FileProvider;
 import android.support.v4.util.Pair;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;

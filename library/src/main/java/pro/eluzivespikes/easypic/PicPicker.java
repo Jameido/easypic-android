@@ -10,11 +10,10 @@
  *
  */
 
-package pro.eluzivespikes.easyphotopicker;
+package pro.eluzivespikes.easypic;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.annotation.CallSuper;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 
@@ -27,7 +26,7 @@ import java.lang.annotation.Target;
  * Created by Luca Rossi on 03/02/2018.
  */
 
-public interface EasyPhotoPicker {
+public interface PicPicker {
 
 
     /**
@@ -69,9 +68,9 @@ public interface EasyPhotoPicker {
             ElementType.PARAMETER,
             ElementType.ANNOTATION_TYPE})
     @IntDef({
-            EasyPhotoPickerImpl.PickerMode.BITMAP,
-            EasyPhotoPickerImpl.PickerMode.BYTES,
-            EasyPhotoPickerImpl.PickerMode.FILE
+            PicPickerImpl.PickerMode.BITMAP,
+            PicPickerImpl.PickerMode.BYTES,
+            PicPickerImpl.PickerMode.FILE
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface PickerMode {
@@ -90,8 +89,8 @@ public interface EasyPhotoPicker {
     }
 
     interface OnResultListener {
-        void onPickPhotoSuccess(@NonNull PickerResult pickerResult);
+        void onPicPickSuccess(@NonNull PickerResult pickerResult);
 
-        void onPickPhotoFailure(@NonNull Exception exception);
+        void onPicPickFailure(@NonNull Exception exception);
     }
 }

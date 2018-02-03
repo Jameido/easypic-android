@@ -11,7 +11,7 @@ android {
         versionName "0.0.1"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        setProperty("archivesBaseName", "easyphotopicker")
+        setProperty("archivesBaseName", "easypic")
 
     }
     buildTypes {

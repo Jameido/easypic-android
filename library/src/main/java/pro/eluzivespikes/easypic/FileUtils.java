@@ -10,13 +10,12 @@
  *
  */
 
-package pro.eluzivespikes.easyphotopicker;
+package pro.eluzivespikes.easypic;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 

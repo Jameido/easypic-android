@@ -10,7 +10,7 @@
  *
  */
 
-package pro.eluzivespikes.easyphotopicker;
+package pro.eluzivespikes.easypic;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -48,11 +48,12 @@ import java.util.List;
 /**
  * Created by Luca Rossi on 02/02/2018.
  */
-abstract class EasyPhotoPickerImpl implements EasyPhotoPicker {
+abstract class PicPickerImpl implements PicPicker {
+
+    private static final String TAG = "PicPickerImpl";
 
     private static final int PERMISSION_CAMERA_STORAGE = 345;
-    private static final String DEFAULT_FILENAME = "easy_photo_picker_picture";
-    private static final String TAG = EasyPhotoPickerImpl.class.getSimpleName();
+    private static final String DEFAULT_FILENAME = "easy_pic_picture";
     private static final int REQUEST_RESULT_CAMERA_GALLERY_DEFAULT = 300;
     private static final int DEFAULT_PICTURE_SIZE = 0;
 
@@ -64,16 +65,16 @@ abstract class EasyPhotoPickerImpl implements EasyPhotoPicker {
     private boolean mShowGallery = false;
     private int mPictureSize = DEFAULT_PICTURE_SIZE;
     private int[] mModes;
-    private EasyPhotoPickerImpl.ProcessResultTask mProcessResultTask;
+    private PicPickerImpl.ProcessResultTask mProcessResultTask;
 
-    private EasyPhotoPickerImpl.OnResultListener mOnResultListener;
+    private PicPickerImpl.OnResultListener mOnResultListener;
 
     /**
      * Set the result listener to be invoked when the picture has been successfully processed.
      *
      * @param resultListener the result listener
      */
-    void setOnResultListener(EasyPhotoPickerImpl.OnResultListener resultListener) {
+    void setOnResultListener(PicPickerImpl.OnResultListener resultListener) {
         mOnResultListener = resultListener;
     }
 
@@ -212,7 +213,7 @@ abstract class EasyPhotoPickerImpl implements EasyPhotoPicker {
     /**
      * Called from {@link Activity#onRequestPermissionsResult(int, String[], int[])}
      * and if the request code matches with {@link #mPermissionCode} checks if the permissions have
-     * been given and calls the appropriate {@link EasyPhotoPickerImpl.OnResultListener} method.
+     * been given and calls the appropriate {@link PicPickerImpl.OnResultListener} method.
      *
      * @param requestCode  the permissions request code
      * @param permissions  the permissions asked
@@ -321,9 +322,9 @@ abstract class EasyPhotoPickerImpl implements EasyPhotoPicker {
             mOutputFileUri = getOutputUri();
             showSelector(CameraUtils.getIntentChooser(getContext(), mOutputFileUri, mShowGallery), mRequestCode);
         } catch (IOException ex) {
-            Log.e(TAG, "photo picker", ex);
+            Log.e(TAG, "startIntentChooser: ", ex);
             if (mOnResultListener != null) {
-                mOnResultListener.onPickPhotoFailure(ex);
+                mOnResultListener.onPicPickFailure(ex);
             }
         }
     }
@@ -363,7 +364,7 @@ abstract class EasyPhotoPickerImpl implements EasyPhotoPicker {
                         }
                     }
                 } catch (Exception ex) {
-                    Log.e(TAG, "photo picker", ex);
+                    Log.e(TAG, "doInBackground: ", ex);
                     mException = ex;
                 }
             }
@@ -375,9 +376,9 @@ abstract class EasyPhotoPickerImpl implements EasyPhotoPicker {
         protected void onPostExecute(@NonNull PickerResult aPickerResult) {
             if (mOnResultListener != null) {
                 if (mException != null) {
-                    mOnResultListener.onPickPhotoFailure(mException);
+                    mOnResultListener.onPicPickFailure(mException);
                 } else {
-                    mOnResultListener.onPickPhotoSuccess(aPickerResult);
+                    mOnResultListener.onPicPickSuccess(aPickerResult);
                 }
             }
         }

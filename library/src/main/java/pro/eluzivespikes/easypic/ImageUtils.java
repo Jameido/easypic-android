@@ -10,7 +10,7 @@
  *
  */
 
-package pro.eluzivespikes.easyphotopicker;
+package pro.eluzivespikes.easypic;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -106,7 +106,7 @@ public class ImageUtils {
                 result = Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
             }
         } catch (Exception e) {
-            Log.e(TAG, "Error while rotating image", e);
+            Log.e(TAG, "rotateImage: ", e);
         }
         return result;
     }

@@ -1,4 +1,4 @@
-package pro.eluzivespikes.easyphotopicker.demo
+package pro.eluzivespikes.easypic.demo
 
 import org.junit.Test
 

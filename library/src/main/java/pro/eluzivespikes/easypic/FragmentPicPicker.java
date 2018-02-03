@@ -10,7 +10,7 @@
  *
  */
 
-package pro.eluzivespikes.easyphotopicker;
+package pro.eluzivespikes.easypic;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -20,19 +20,19 @@ import android.support.v4.app.Fragment;
 /**
  * Created by Luca Rossi on 05/07/2017.
  * <p>
- * Extends {@link ActivityEasyPhotoPicker} and uses a fragment instead of the activity
+ * Extends {@link ActivityPicPicker} and uses a fragment instead of the activity
  * </p>
  */
-class FragmentEasyPhotoPicker extends EasyPhotoPickerImpl {
+class FragmentPicPicker extends PicPickerImpl {
 
-    private static final String TAG = "FragmentEasyPhotoPicker";
+    private static final String TAG = "FragmentPicPicker";
 
     private Fragment mFragment;
 
     /**
-     * @param fragment the fragment that calls the {@link ActivityEasyPhotoPicker}
+     * @param fragment the fragment that calls the {@link ActivityPicPicker}
      */
-    FragmentEasyPhotoPicker(@NonNull Fragment fragment) {
+    FragmentPicPicker(@NonNull Fragment fragment) {
         mFragment = fragment;
     }
 

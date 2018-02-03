@@ -12,12 +12,12 @@ bintray {
     override = true
     pkg {
         repo = 'android-libraries'
-        name = 'easy-photo-picker'
+        name = 'easy-pic'
         licenses = ['MIT']
-        vcsUrl = 'https://github.com/Jameido/easy-photo-picker-android.git'
+        vcsUrl = 'https://github.com/Jameido/easy-pic-android.git'
         version {
             name = this.version
-            desc = "Easy Photo Picker ${this.version}"
+            desc = "Easy Pic ${this.version}"
             released = new Date()
             vcsTag = this.version
         }
@@ -38,15 +38,15 @@ def pomConfig = {
     licenses {
         license {
             name "The MIT License"
-            url "https://github.com/Jameido/easy-photo-picker-android/blob/dev/LICENSE"
+            url "https://github.com/Jameido/easy-pic-android/blob/dev/LICENSE"
             distribution "repo"
         }
     }
 
     scm {
-        connection "https://github.com/Jameido/easy-photo-picker-android.git"
-        developerConnection "https://github.com/Jameido/easy-photo-picker-android.git"
-        url "https://github.com/Jameido/easy-photo-picker-android"
+        connection "https://github.com/Jameido/easy-pic-android.git"
+        developerConnection "https://github.com/Jameido/easy-pic-android.git"
+        url "https://github.com/Jameido/easy-pic-android"
 
     }
 }
@@ -55,16 +55,16 @@ publishing {
     publications {
         Development(MavenPublication) {
 
-            artifact("$buildDir/outputs/aar/easyphotopicker-release.aar")
+            artifact("$buildDir/outputs/aar/easypic-release.aar")
             groupId this.group
-            artifactId 'easy-photo-picker'
+            artifactId 'easy-pic'
             version this.version
 
             pom.withXml {
                 def root = asNode()
-                root.appendNode('description', 'A module for Android that makes taking pictures with camera or from the gallery easy as taking a glass of water.')
-                root.appendNode('name', 'easy-photo-picker')
-                root.appendNode('url', 'https://github.com/Jameido/easy-photo-picker-android')
+                root.appendNode('description', 'An Android library that makes taking pictures from camera or gallery easy as taking a glass of water.')
+                root.appendNode('name', 'easy-pic')
+                root.appendNode('url', 'https://github.com/Jameido/easy-pic-android')
                 root.children().last() + pomConfig
             }
 

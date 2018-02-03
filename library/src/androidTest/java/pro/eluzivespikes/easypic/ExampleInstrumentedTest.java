@@ -1,4 +1,4 @@
-package pro.eluzivespikes.easyphotopicker;
+package pro.eluzivespikes.easypic;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("pro.eluzivespikes.easyphotopicker.test", appContext.getPackageName());
+        assertEquals("pro.eluzivespikes.easypic.test", appContext.getPackageName());
     }
 }

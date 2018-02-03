@@ -7,7 +7,7 @@ apply plugin: 'kotlin-android-extensions'
 android {
     compileSdkVersion 27
     defaultConfig {
-        applicationId "pro.eluzivespikes.easyphotopicker.demo"
+        applicationId "pro.eluzivespikes.easypic.demo"
         minSdkVersion 21
         targetSdkVersion 27
         versionCode 1

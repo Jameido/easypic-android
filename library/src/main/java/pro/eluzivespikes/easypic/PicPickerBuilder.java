@@ -10,7 +10,7 @@
  *
  */
 
-package pro.eluzivespikes.easyphotopicker;
+package pro.eluzivespikes.easypic;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -20,16 +20,16 @@ import android.support.v4.app.Fragment;
 /**
  * Created by Luca Rossi on 03/02/2018.
  */
-public class EasyPhotoPickerBuilder {
+public class PicPickerBuilder {
 
-    private EasyPhotoPickerImpl mEasyPhotoPicker;
+    private PicPickerImpl mPicPicker;
 
-    public EasyPhotoPickerBuilder(Activity activity) {
-        mEasyPhotoPicker = new ActivityEasyPhotoPicker(activity);
+    public PicPickerBuilder(Activity activity) {
+        mPicPicker = new ActivityPicPicker(activity);
     }
 
-    public EasyPhotoPickerBuilder(Fragment fragment) {
-        mEasyPhotoPicker = new FragmentEasyPhotoPicker(fragment);
+    public PicPickerBuilder(Fragment fragment) {
+        mPicPicker = new FragmentPicPicker(fragment);
     }
 
     /**
@@ -37,8 +37,8 @@ public class EasyPhotoPickerBuilder {
      *
      * @param resultListener the result listener
      */
-    public EasyPhotoPickerBuilder withResultListener(EasyPhotoPickerImpl.OnResultListener resultListener) {
-        this.mEasyPhotoPicker.setOnResultListener(resultListener);
+    public PicPickerBuilder withResultListener(PicPickerImpl.OnResultListener resultListener) {
+        this.mPicPicker.setOnResultListener(resultListener);
         return this;
     }
 
@@ -48,8 +48,8 @@ public class EasyPhotoPickerBuilder {
      *
      * @param coordinatorLayout the given coordinator
      */
-    public EasyPhotoPickerBuilder withCoordinatorLayout(CoordinatorLayout coordinatorLayout) {
-        this.mEasyPhotoPicker.setCoordinatorLayout(coordinatorLayout);
+    public PicPickerBuilder withCoordinatorLayout(CoordinatorLayout coordinatorLayout) {
+        this.mPicPicker.setCoordinatorLayout(coordinatorLayout);
         return this;
     }
 
@@ -58,8 +58,8 @@ public class EasyPhotoPickerBuilder {
      *
      * @param pictureSize the requested size (0 if no compression is required)
      */
-    public EasyPhotoPickerBuilder withPictureSize(int pictureSize) {
-        this.mEasyPhotoPicker.setPictureSize(pictureSize);
+    public PicPickerBuilder withPictureSize(int pictureSize) {
+        this.mPicPicker.setPictureSize(pictureSize);
         return this;
     }
 
@@ -70,8 +70,8 @@ public class EasyPhotoPickerBuilder {
      *
      * @param requestCode the given request code
      */
-    public EasyPhotoPickerBuilder withRequestCode(int requestCode) {
-        this.mEasyPhotoPicker.setRequestCode(requestCode);
+    public PicPickerBuilder withRequestCode(int requestCode) {
+        this.mPicPicker.setRequestCode(requestCode);
         return this;
     }
 
@@ -80,30 +80,30 @@ public class EasyPhotoPickerBuilder {
      *
      * @param showGallery the bool
      */
-    public EasyPhotoPickerBuilder withGallery(boolean showGallery) {
-        this.mEasyPhotoPicker.setShowGallery(showGallery);
+    public PicPickerBuilder withGallery(boolean showGallery) {
+        this.mPicPicker.setShowGallery(showGallery);
         return this;
     }
 
-    public EasyPhotoPickerBuilder withFileName(String fileName) {
-        this.mEasyPhotoPicker.setFilename(fileName);
+    public PicPickerBuilder withFileName(String fileName) {
+        this.mPicPicker.setFilename(fileName);
         return this;
     }
 
     /**
      * Sets a list of modes on how the resulting picture can be returned, possible values are
-     * {@link EasyPhotoPickerImpl.PickerMode#BITMAP}
-     * {@link EasyPhotoPickerImpl.PickerMode#BYTES}
-     * {@link EasyPhotoPickerImpl.PickerMode#FILE}
+     * {@link PicPicker.PickerMode#BITMAP}
+     * {@link PicPicker.PickerMode#BYTES}
+     * {@link PicPicker.PickerMode#FILE}
      *
      * @param modes the chosen modes
      */
-    public EasyPhotoPickerBuilder withModes(int... modes) {
-        this.mEasyPhotoPicker.setModes(modes);
+    public PicPickerBuilder withModes(int... modes) {
+        this.mPicPicker.setModes(modes);
         return this;
     }
 
-    public EasyPhotoPicker build() {
-        return mEasyPhotoPicker;
+    public PicPicker build() {
+        return mPicPicker;
     }
 }

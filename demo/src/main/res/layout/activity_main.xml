@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="pro.eluzivespikes.easyphotopicker.demo.MainActivity">
+    tools:context="pro.eluzivespikes.easypic.demo.MainActivity">
 
     <ImageView
         android:id="@+id/image_result_bitmap"

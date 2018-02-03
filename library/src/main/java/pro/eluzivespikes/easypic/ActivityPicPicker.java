@@ -10,7 +10,7 @@
  *
  */
 
-package pro.eluzivespikes.easyphotopicker;
+package pro.eluzivespikes.easypic;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -38,11 +38,11 @@ import android.os.Build;
  * </provider>
  * </application>
  */
-class ActivityEasyPhotoPicker extends EasyPhotoPickerImpl {
+class ActivityPicPicker extends PicPickerImpl {
 
     private Activity mActivity;
 
-    ActivityEasyPhotoPicker(Activity activity) {
+    ActivityPicPicker(Activity activity) {
         mActivity = activity;
     }
 
