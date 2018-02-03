@@ -8,31 +8,35 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
-import pro.eluzivespikes.easyphotopicker.ActivityEasyPhotoPicker
+import pro.eluzivespikes.easyphotopicker.EasyPhotoPicker
+import pro.eluzivespikes.easyphotopicker.EasyPhotoPickerBuilder
 import pro.eluzivespikes.easyphotopicker.PickerResult
 import java.lang.Exception
-import java.util.ArrayList
 
-class MainActivity : AppCompatActivity(), ActivityEasyPhotoPicker.OnResultListener {
+class MainActivity : AppCompatActivity(), EasyPhotoPicker.OnResultListener {
 
-    private lateinit var mEasyPhotoPicker: ActivityEasyPhotoPicker
+    private lateinit var mEasyPhotoPicker: EasyPhotoPicker
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         findViewById<View>(R.id.button_take_picture)
-                .setOnClickListener { mEasyPhotoPicker.openPicker("easyphotopickerdemo") }
+                .setOnClickListener { mEasyPhotoPicker.openPicker() }
 
-        mEasyPhotoPicker = ActivityEasyPhotoPicker.Builder(this, "pro.eluzivespikes.easyphotopicker.demo.fileprovider")
+        mEasyPhotoPicker = EasyPhotoPickerBuilder(this, "pro.eluzivespikes.easyphotopicker.demo.fileprovider")
                 .withModes(
-                        ActivityEasyPhotoPicker.PickerMode.BITMAP,
-                        ActivityEasyPhotoPicker.PickerMode.BYTES,
-                        ActivityEasyPhotoPicker.PickerMode.FILE
+                        EasyPhotoPicker.PickerMode.BITMAP,
+                        EasyPhotoPicker.PickerMode.BYTES,
+                        EasyPhotoPicker.PickerMode.FILE
                 )
-                .withPictureSize(400
-                )
+                .withPictureSize(400)
                 .withResultListener(this)
                 .build()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mEasyPhotoPicker.onDestroy()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -46,14 +50,12 @@ class MainActivity : AppCompatActivity(), ActivityEasyPhotoPicker.OnResultListen
     }
 
     override fun onPickPhotoSuccess(pickerResult: PickerResult) {
-        findViewById<ImageView>(R.id.image_result_bitmap).setImageBitmap(pickerResult.bitmap)
-        findViewById<ImageView>(R.id.image_result_bytes).setImageBitmap(BitmapFactory.decodeByteArray(pickerResult.bytes, 0, pickerResult.bytes.size))
-        findViewById<ImageView>(R.id.image_result_file).setImageURI(Uri.fromFile(pickerResult.file))
+        pickerResult.bitmap?.let { bitmap -> findViewById<ImageView>(R.id.image_result_bitmap).setImageBitmap(bitmap) }
+        pickerResult.bytes?.let { bytes -> findViewById<ImageView>(R.id.image_result_bytes).setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.size)) }
+        pickerResult.file?.let { file -> findViewById<ImageView>(R.id.image_result_file).setImageURI(Uri.fromFile(file)) }
     }
 
     override fun onPickPhotoFailure(exception: Exception) {
         Toast.makeText(this, exception.message, Toast.LENGTH_LONG).show()
     }
-
-
 }

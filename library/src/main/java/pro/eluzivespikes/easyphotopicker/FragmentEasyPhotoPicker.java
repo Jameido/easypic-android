@@ -12,10 +12,10 @@
 
 package pro.eluzivespikes.easyphotopicker;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.util.Log;
-
-import java.io.IOException;
 
 /**
  * Created by Luca Rossi on 05/07/2017.
@@ -23,38 +23,37 @@ import java.io.IOException;
  * Extends {@link ActivityEasyPhotoPicker} and uses a fragment instead of the activity
  * </p>
  */
-
-public class FragmentEasyPhotoPicker extends ActivityEasyPhotoPicker {
+class FragmentEasyPhotoPicker extends EasyPhotoPickerImpl {
 
     private static final String TAG = "FragmentEasyPhotoPicker";
 
     private Fragment mFragment;
 
     /**
-     *
      * @param fragment the fragment that calls the {@link ActivityEasyPhotoPicker}
-     * @param provider the project file provider
      */
-    public FragmentEasyPhotoPicker(Fragment fragment, String provider) {
-        super(fragment.getActivity(), provider);
+    FragmentEasyPhotoPicker(@NonNull Fragment fragment) {
         mFragment = fragment;
     }
 
-
     @Override
-    protected void requestPermissions(String[] permissions) {
-        mFragment.requestPermissions(permissions, mPermissionCode);
+    protected Activity getActivity() {
+        return mFragment.getActivity();
     }
 
     @Override
-    protected void startIntentChooser() {
-        try {
-            mOutputFileUri = CameraUtils.startIntentChooser(mActivity, mFragment, mProvider, getTempFilename(), mRequestCode, mShowGallery);
-        } catch (IOException ex) {
-            Log.e(TAG, "photo picker", ex);
-            if(mOnResultListener != null){
-                mOnResultListener.onPickPhotoFailure(ex);
-            }
-        }
+    protected void requestPermissions(String[] permissions, int requestCode) {
+        mFragment.requestPermissions(permissions, requestCode);
+    }
+
+    @Override
+    protected void showSelector(Intent selectorIntent, int requestCode) {
+        getActivity().startActivityForResult(selectorIntent, requestCode);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mFragment = null;
     }
 }

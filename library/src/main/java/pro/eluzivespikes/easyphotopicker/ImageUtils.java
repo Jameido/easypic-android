@@ -12,19 +12,13 @@
 
 package pro.eluzivespikes.easyphotopicker;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Matrix;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.VectorDrawable;
 import android.net.Uri;
-import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.media.ExifInterface;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import java.io.IOException;
@@ -37,47 +31,21 @@ public class ImageUtils {
     private static final String TAG = "ImageUtils";
 
     /**
-     * @param vectorDrawable
-     * @return
+     * Decodes the file corresponding to the uri into a bitmap:
+     * - if a required size is specified (> 0) it gets scaled to it
+     * - if necessary is rotated
+     *
+     * @param context      the given context
+     * @param uri          the uri of the image
+     * @param requiredSize the scale size (0 if to keep original)
+     * @return the resulting bitmap
+     * @throws IOException thrown if an error happens in the process
      */
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    private static Bitmap getBitmap(VectorDrawable vectorDrawable) {
-        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(),
-                vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        vectorDrawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        vectorDrawable.draw(canvas);
-        return bitmap;
-    }
-
-    /**
-     * @param context
-     * @param drawableId
-     * @return
-     */
-    public static Bitmap getBitmap(Context context, int drawableId) {
-        Drawable drawable = ContextCompat.getDrawable(context, drawableId);
-        if (drawable instanceof BitmapDrawable) {
-            return ((BitmapDrawable) drawable).getBitmap();
-        } else if (drawable instanceof VectorDrawable) {
-            return getBitmap((VectorDrawable) drawable);
-        } else {
-            throw new IllegalArgumentException("unsupported drawable type");
-        }
-    }
-
-    /**
-     * @param c
-     * @param uri
-     * @param requiredSize
-     * @return
-     * @throws IOException
-     */
-    public static Bitmap decodeAndResizeImageUri(Context c, Uri uri, final int requiredSize)
+    public static Bitmap decodeAndResizeImageUri(@NonNull final Context context, Uri uri, final int requiredSize)
             throws IOException {
         BitmapFactory.Options o = new BitmapFactory.Options();
         o.inJustDecodeBounds = true;
-        BitmapFactory.decodeStream(c.getContentResolver().openInputStream(uri), null, o);
+        BitmapFactory.decodeStream(context.getContentResolver().openInputStream(uri), null, o);
 
         double scale = 1;
 
@@ -93,19 +61,20 @@ public class ImageUtils {
         o2.inSampleSize = (int) Math.ceil(scale);
         o2.inJustDecodeBounds = false;
 
-        return rotateImageIfRequired(c, BitmapFactory.decodeStream(c.getContentResolver().openInputStream(uri), null, o2), uri);
+        return rotateImageIfRequired(context, BitmapFactory.decodeStream(context.getContentResolver().openInputStream(uri), null, o2), uri);
     }
 
     /**
-     * Rotate an image if required.
+     * Check the EXIF orientation property of the original file and then if necessary rotates the
+     * passed bitmap.
      *
      * @param img           The image bitmap
      * @param selectedImage Image URI
      * @return The resulted Bitmap after manipulation
      */
-    private static Bitmap rotateImageIfRequired(Context c, Bitmap img, Uri selectedImage) throws IOException {
+    private static Bitmap rotateImageIfRequired(@NonNull final Context context, Bitmap img, Uri selectedImage) throws IOException {
 
-        ExifInterface ei = new ExifInterface(c.getContentResolver().openInputStream(selectedImage));
+        ExifInterface ei = new ExifInterface(context.getContentResolver().openInputStream(selectedImage));
         int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
 
         switch (orientation) {
@@ -120,6 +89,14 @@ public class ImageUtils {
         }
     }
 
+    /**
+     * Rotates the bitmap by the given angle, if there is an error in the rotation process the
+     * original bitmap is returned
+     *
+     * @param source          the bitmap to rotate
+     * @param rotationDegrees the angle expressed in degrees
+     * @return the rotated bitmap
+     */
     public static Bitmap rotateImage(Bitmap source, int rotationDegrees) {
         Bitmap result = source;
         try {
@@ -129,7 +106,7 @@ public class ImageUtils {
                 result = Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
             }
         } catch (Exception e) {
-            Log.e(TAG, "Error while ritating image", e);
+            Log.e(TAG, "Error while rotating image", e);
         }
         return result;
     }

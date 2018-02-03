@@ -17,6 +17,7 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
@@ -37,6 +38,7 @@ import java.util.List;
  */
 
 public class CameraUtils {
+
 
     /**
      * Starts a camera/gallery selector and returns the output file uri.
@@ -98,7 +100,7 @@ public class CameraUtils {
      * @return intent to display the chooser
      * @throws IOException thrown if an error happens while creating the temp file
      */
-    private static Intent getIntentChooser(final Context context, Uri outputFileUri, boolean showGallery) throws IOException {
+    public static Intent getIntentChooser(final Context context, Uri outputFileUri, boolean showGallery) throws IOException {
 
         List<Intent> selectorIntents = new ArrayList<>();
         selectorIntents.addAll(getCameraIntents(context, outputFileUri));
@@ -178,30 +180,31 @@ public class CameraUtils {
     /**
      * Checks if all the necessary permissions have been given and returns the ones that
      * still need to be granted by the user
+     *
      * @param activity the activity from which the picker is called
      * @return the loist of missing permissions
      */
     @NonNull
-    public static Pair<String[], String> checkPermissions(Activity activity) {
+    public static Pair<String[], String> getMissingPermissions(Activity activity) {
         final List<String> permissionsList = new ArrayList<>();
         String permissionsMessage = "";
-
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
-            if (!PermissionsCompat.isPermissionGranted(activity, Manifest.permission.CAMERA)) {
+            if (activity.checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                 permissionsList.add(Manifest.permission.CAMERA);
-                if (activity.shouldShowRequestPermissionRationale(Manifest.permission.READ_CONTACTS)) {
+
+                if (activity.shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
                     permissionsMessage += activity.getString(R.string.camera_permission_rationale);
                 }
             }
 
             boolean askStorageRationale = false;
 
-            if (!PermissionsCompat.isPermissionGranted(activity, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            if (activity.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 permissionsList.add(Manifest.permission.READ_EXTERNAL_STORAGE);
                 askStorageRationale = activity.shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE);
             }
 
-            if (!PermissionsCompat.isPermissionGranted(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            if (activity.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 permissionsList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
                 askStorageRationale = activity.shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE);
             }
