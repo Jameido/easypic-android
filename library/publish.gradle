@@ -16,9 +16,9 @@ bintray {
     override = true
     pkg {
         repo = 'android-libraries'
-        name = 'easy-pic'
+        name = 'easypic'
         licenses = ['MIT']
-        vcsUrl = 'https://github.com/Jameido/easy-pic-android.git'
+        vcsUrl = 'https://github.com/Jameido/easypic-android.git'
         version {
             name = this.version
             desc = "Easy Pic ${this.version}"
@@ -42,15 +42,15 @@ def pomConfig = {
     licenses {
         license {
             name "The MIT License"
-            url "https://github.com/Jameido/easy-pic-android/blob/dev/LICENSE"
+            url "https://github.com/Jameido/easypic-android/blob/dev/LICENSE"
             distribution "repo"
         }
     }
 
     scm {
-        connection "https://github.com/Jameido/easy-pic-android.git"
-        developerConnection "https://github.com/Jameido/easy-pic-android.git"
-        url "https://github.com/Jameido/easy-pic-android"
+        connection "https://github.com/Jameido/easypic-android.git"
+        developerConnection "https://github.com/Jameido/easypic-android.git"
+        url "https://github.com/Jameido/easypic-android"
 
     }
 }
@@ -61,14 +61,14 @@ publishing {
 
             artifact("$buildDir/outputs/aar/easypic-release.aar")
             groupId this.group
-            artifactId 'easy-pic'
+            artifactId 'easypic'
             version this.version
 
             pom.withXml {
                 def root = asNode()
                 root.appendNode('description', 'An Android library that makes taking pictures from camera or gallery easy as taking a glass of water.')
-                root.appendNode('name', 'easy-pic')
-                root.appendNode('url', 'https://github.com/Jameido/easy-pic-android')
+                root.appendNode('name', 'easypic')
+                root.appendNode('url', 'https://github.com/Jameido/easypic-android')
                 root.children().last() + pomConfig
             }
 
