@@ -24,6 +24,7 @@ class MainActivity : AppCompatActivity(), PicPicker.OnResultListener {
                 .setOnClickListener { mPicPicker.openPicker() }
 
         mPicPicker = PicPickerBuilder(this)
+                .withGallery(true)
                 .withModes(
                         PicPicker.PickerMode.BITMAP,
                         PicPicker.PickerMode.BYTES,
@@ -31,6 +32,7 @@ class MainActivity : AppCompatActivity(), PicPicker.OnResultListener {
                 )
                 .withPictureSize(400)
                 .withResultListener(this)
+                .withScaleType(PicPicker.ScaleType.CROP)
                 .build()
     }
 

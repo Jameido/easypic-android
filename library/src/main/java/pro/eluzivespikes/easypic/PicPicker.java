@@ -88,6 +88,35 @@ public interface PicPicker {
         int FILE = 2;
     }
 
+
+    /**
+     * Used to indicate the type of
+     */
+    @Target({ElementType.FIELD,
+            ElementType.LOCAL_VARIABLE,
+            ElementType.PARAMETER,
+            ElementType.ANNOTATION_TYPE})
+    @IntDef({
+            PicPickerImpl.ScaleType.KEEP_RATIO,
+            PicPickerImpl.ScaleType.CROP,
+            PicPickerImpl.ScaleType.SCALE_XY
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @interface ScaleType {
+        /**
+         * Bigger size will be scaled down to required size to keep aspect ratio
+         */
+        int KEEP_RATIO = 0;
+        /**
+         * Smaller size will be scaled down to required size then cropped
+         */
+        int CROP = 1;
+        /**
+         * Both sizes will be scaled down to required size
+         */
+        int SCALE_XY = 2;
+    }
+
     interface OnResultListener {
         void onPicPickSuccess(@NonNull PickerResult pickerResult);
 

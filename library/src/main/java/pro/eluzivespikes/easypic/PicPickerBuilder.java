@@ -103,6 +103,19 @@ public class PicPickerBuilder {
         return this;
     }
 
+    /**
+     * Sets how the resulting image should be scaled to the requested size, possible values are:
+     * {@link PicPicker.ScaleType#KEEP_RATIO}
+     * {@link PicPicker.ScaleType#CROP}
+     * {@link PicPicker.ScaleType#SCALE_XY}
+     *
+     * @param scaleType
+     */
+    public PicPickerBuilder withScaleType(@PicPicker.ScaleType int scaleType) {
+        this.mPicPicker.setScaleType(scaleType);
+        return this;
+    }
+
     public PicPicker build() {
         return mPicPicker;
     }

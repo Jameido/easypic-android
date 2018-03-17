@@ -64,6 +64,8 @@ abstract class PicPickerImpl implements PicPicker {
     private String mFilename = DEFAULT_FILENAME;
     private boolean mShowGallery = false;
     private int mPictureSize = DEFAULT_PICTURE_SIZE;
+    @ScaleType
+    private int mScaleType = ScaleType.KEEP_RATIO;
     private int[] mModes;
     private PicPickerImpl.ProcessResultTask mProcessResultTask;
 
@@ -145,6 +147,18 @@ abstract class PicPickerImpl implements PicPicker {
      */
     void setModes(int... aModes) {
         mModes = aModes;
+    }
+
+    /**
+     * Sets how the resulting image should be scaled to the {@link #mPictureSize}, possible values are:
+     * {@link ScaleType#KEEP_RATIO}
+     * {@link ScaleType#CROP}
+     * {@link ScaleType#SCALE_XY}
+     *
+     * @param scaleType
+     */
+    void setScaleType(@ScaleType int scaleType) {
+        mScaleType = scaleType;
     }
 
     /**
@@ -383,9 +397,16 @@ abstract class PicPickerImpl implements PicPicker {
             }
         }
 
-
         private Bitmap resultBitmap(Uri aSourceUri) throws IOException {
-            return ImageUtils.decodeAndResizeImageUri(getContext(), aSourceUri, mPictureSize);
+            switch (mScaleType) {
+                case ScaleType.CROP:
+                    return ImageUtils.decodeAndCropImageUri(getContext(), aSourceUri, mPictureSize);
+                case ScaleType.SCALE_XY:
+                    return ImageUtils.decodeAndResizeImageUri(getContext(), aSourceUri, mPictureSize);
+                case ScaleType.KEEP_RATIO:
+                default:
+                    return ImageUtils.decodeAndResizeImageUri(getContext(), aSourceUri, mPictureSize);
+            }
         }
 
         private File resultFile(Bitmap aBitmap) throws IOException {

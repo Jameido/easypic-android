@@ -24,7 +24,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/pictures_paths" />
         </provider>
-        <activity android:name="pro.eluzivespikes.easypic.demo.pro.eluzivespikes.easypic.demo.MainActivity">
+        <activity android:name="pro.eluzivespikes.easypic.demo.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
