@@ -15,25 +15,23 @@ import java.lang.Exception
 
 class MainActivity : AppCompatActivity(), PicPicker.OnResultListener {
 
-    private lateinit var mPicPicker: PicPicker
+    private var mPicPicker: PicPicker = PicPickerBuilder(this)
+            .withGallery(true)
+            .withModes(
+                    PicPicker.PickerMode.BITMAP,
+                    PicPicker.PickerMode.BYTES,
+                    PicPicker.PickerMode.FILE
+            )
+            .withPictureSize(400)
+            .withResultListener(this)
+            .withScaleType(PicPicker.ScaleType.CROP)
+            .build()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         findViewById<View>(R.id.button_take_picture)
                 .setOnClickListener { mPicPicker.openPicker() }
-
-        mPicPicker = PicPickerBuilder(this)
-                .withGallery(true)
-                .withModes(
-                        PicPicker.PickerMode.BITMAP,
-                        PicPicker.PickerMode.BYTES,
-                        PicPicker.PickerMode.FILE
-                )
-                .withPictureSize(400)
-                .withResultListener(this)
-                .withScaleType(PicPicker.ScaleType.CROP)
-                .build()
     }
 
     override fun onDestroy() {
