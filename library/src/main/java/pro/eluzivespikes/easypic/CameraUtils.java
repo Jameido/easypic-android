@@ -24,7 +24,6 @@ import android.os.Build;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.v4.util.Pair;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -131,30 +130,41 @@ public class CameraUtils {
      * @return the list of missing permissions
      */
     @NonNull
-    public static Pair<String[], Boolean> getMissingPermissions(Activity activity) {
-        final List<String> missingPermissions = new ArrayList<>();
-        boolean askRationale = false;
+    public static MissingPermissions getMissingPermissions(Activity activity) {
+        final MissingPermissions vMissingPermissions = new MissingPermissions();
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
             if (activity.checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                missingPermissions.add(Manifest.permission.CAMERA);
+                vMissingPermissions.getMissingPermissions().add(Manifest.permission.CAMERA);
 
-                askRationale = activity.shouldShowRequestPermissionRationale(Manifest.permission.CAMERA);
+                vMissingPermissions.mRationale = activity.shouldShowRequestPermissionRationale(Manifest.permission.CAMERA);
             }
 
             if (activity.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                missingPermissions.add(Manifest.permission.READ_EXTERNAL_STORAGE);
-                askRationale = askRationale || activity.shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                vMissingPermissions.getMissingPermissions().add(Manifest.permission.READ_EXTERNAL_STORAGE);
+                vMissingPermissions.mRationale = vMissingPermissions.mRationale || activity.shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE);
             }
 
             if (activity.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                missingPermissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-                askRationale = askRationale || activity.shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-            }
-
-            if (missingPermissions.size() > 0) {
-                return new Pair<>(missingPermissions.toArray(new String[missingPermissions.size()]), askRationale);
+                vMissingPermissions.getMissingPermissions().add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                vMissingPermissions.mRationale = vMissingPermissions.mRationale || activity.shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE);
             }
         }
-        return new Pair<>(new String[0], askRationale);
+        return vMissingPermissions;
+    }
+
+
+    public static class MissingPermissions {
+        @NonNull
+        private List<String> mMissingPermissions = new ArrayList<>();
+        private boolean mRationale = false;
+
+        @NonNull
+        public List<String> getMissingPermissions() {
+            return mMissingPermissions;
+        }
+
+        public boolean isRationale() {
+            return mRationale;
+        }
     }
 }

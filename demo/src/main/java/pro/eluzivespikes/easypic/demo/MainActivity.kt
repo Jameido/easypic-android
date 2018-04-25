@@ -13,18 +13,29 @@ import pro.eluzivespikes.easypic.PicPickerBuilder
 import pro.eluzivespikes.easypic.PickerResult
 import java.lang.Exception
 
-class MainActivity : AppCompatActivity(), PicPicker.OnResultListener {
+class MainActivity : AppCompatActivity() {
+
+    private val onPickSuccess: (result: PickerResult) -> Unit = { result ->
+        result.bitmap?.let { bitmap -> findViewById<ImageView>(R.id.image_result_bitmap).setImageBitmap(bitmap) }
+        result.bytes?.let { bytes -> findViewById<ImageView>(R.id.image_result_bytes).setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.size)) }
+        result.file?.let { file -> findViewById<ImageView>(R.id.image_result_file).setImageURI(Uri.fromFile(file)) }
+    }
+
+    private val onPickFailure: (exception: Exception) -> Unit = { exception ->
+        Toast.makeText(this, exception.message, Toast.LENGTH_LONG).show()
+    }
 
     private var mPicPicker: PicPicker = PicPickerBuilder(this)
-            .withGallery(true)
+            .showGallery()
             .withModes(
-                    PicPicker.PickerMode.BITMAP,
-                    PicPicker.PickerMode.BYTES,
-                    PicPicker.PickerMode.FILE
+                    PicPicker.BITMAP,
+                    PicPicker.BYTES,
+                    PicPicker.FILE
             )
             .withPictureSize(400)
-            .withResultListener(this)
-            .withScaleType(PicPicker.ScaleType.CROP)
+            .withSuccessListener(onPickSuccess)
+            .withFailureListener(onPickFailure)
+            .withScaleType(PicPicker.CROP)
             .build()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,13 +60,4 @@ class MainActivity : AppCompatActivity(), PicPicker.OnResultListener {
         mPicPicker.onActivityResult(requestCode, resultCode, data)
     }
 
-    override fun onPicPickSuccess(pickerResult: PickerResult) {
-        pickerResult.bitmap?.let { bitmap -> findViewById<ImageView>(R.id.image_result_bitmap).setImageBitmap(bitmap) }
-        pickerResult.bytes?.let { bytes -> findViewById<ImageView>(R.id.image_result_bytes).setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.size)) }
-        pickerResult.file?.let { file -> findViewById<ImageView>(R.id.image_result_file).setImageURI(Uri.fromFile(file)) }
-    }
-
-    override fun onPicPickFailure(exception: Exception) {
-        Toast.makeText(this, exception.message, Toast.LENGTH_LONG).show()
-    }
 }
