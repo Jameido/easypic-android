@@ -62,9 +62,8 @@ public class FileUtils {
      * @param context  the given context
      * @param filename the name of the created file
      * @return the created picture file
-     * @throws IOException thrown if an error happens while creating the file
      */
-    public static File createPictureFile(Context context, @NonNull String filename) throws IOException {
+    public static File createPictureFile(Context context, @NonNull String filename) {
         if (filename.endsWith(".jpg")) {
             filename = filename.replace(".jpg", "");
         }

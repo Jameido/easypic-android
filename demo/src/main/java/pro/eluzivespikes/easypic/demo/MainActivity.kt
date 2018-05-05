@@ -18,7 +18,10 @@ class MainActivity : AppCompatActivity() {
     private val onPickSuccess: (result: PickerResult) -> Unit = { result ->
         result.bitmap?.let { bitmap -> findViewById<ImageView>(R.id.image_result_bitmap).setImageBitmap(bitmap) }
         result.bytes?.let { bytes -> findViewById<ImageView>(R.id.image_result_bytes).setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.size)) }
-        result.file?.let { file -> findViewById<ImageView>(R.id.image_result_file).setImageURI(Uri.fromFile(file)) }
+        result.file?.let { file ->
+            findViewById<ImageView>(R.id.image_result_file).setImageDrawable(null)
+            findViewById<ImageView>(R.id.image_result_file).setImageURI(Uri.fromFile(file))
+        }
     }
 
     private val onPickFailure: (exception: Exception) -> Unit = { exception ->

@@ -67,7 +67,7 @@ class ProcessResultTask(context: Context, private val picPickerImpl: PicPickerIm
             var outStream: FileOutputStream? = null
             val vDestFile = FileUtils.createPictureFile(it, picPickerImpl.fileName)
             try {
-                outStream = FileOutputStream(vDestFile)
+                outStream = FileOutputStream(vDestFile, false)
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outStream)
             } finally {
                 outStream?.let { outStream.close() }
