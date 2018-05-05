@@ -1,16 +1,12 @@
 package pro.eluzivespikes.easypic
 
-import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.app.Activity
 import android.app.AlertDialog
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
-import android.os.AsyncTask
 import android.os.Build
 import android.provider.MediaStore
 import android.support.design.widget.Snackbar
@@ -19,9 +15,6 @@ import android.support.v4.content.FileProvider
 import android.util.Log
 import android.view.View
 import android.widget.TextView
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileOutputStream
 import java.io.IOException
 
 /**
@@ -47,7 +40,7 @@ abstract class PicPickerImpl : PicPicker {
     internal var requestCode = REQUEST_RESULT_CAMERA_GALLERY_DEFAULT
 
     /**
-     * TODO: add doc
+     * The request code used when asking camera and storage permissions
      */
     internal var permissionCode = PERMISSION_CAMERA_STORAGE
 
@@ -195,7 +188,7 @@ abstract class PicPickerImpl : PicPicker {
                 }
                 val uriFileSrc = if (isCamera) outputFileUri else data?.data
                 activity?.let {
-                    processResultTask = ProcessResultTask(it)
+                    processResultTask = ProcessResultTask(it, this)
                     processResultTask?.execute(uriFileSrc)
                 }
             } else {
@@ -272,72 +265,6 @@ abstract class PicPickerImpl : PicPicker {
                         .setNegativeButton(android.R.string.cancel) { _, _ -> }
                         .show()
             }
-        }
-    }
-
-    @SuppressLint("StaticFieldLeak")
-    inner class ProcessResultTask(context: Context) : AsyncTask<Uri, Void, PickerResult>() {
-
-        private var exception: Exception? = null
-        private var context: Context = context.applicationContext
-
-        override fun doInBackground(vararg params: Uri?): PickerResult {
-            val pickerResult = PickerResult()
-            if (params.isNotEmpty() && params[0] != null) {
-                try {
-                    val bitmap = resultBitmap(params[0]!!)
-                    modes.forEach { mode: Int ->
-                        when (mode) {
-                            PicPicker.BITMAP -> pickerResult.bitmap = bitmap
-                            PicPicker.BYTES -> pickerResult.bytes = resultBytes(bitmap)
-                            PicPicker.FILE -> pickerResult.file = resultFile(bitmap)
-                        }
-                    }
-
-                } catch (ex: Exception) {
-                    Log.e("ProcessResultTask", "Error while porcessing the image result: ", ex)
-                    exception = ex
-                }
-            }
-            return pickerResult
-        }
-
-        override fun onPostExecute(result: PickerResult) {
-            if (exception != null) {
-                onPickFailure.invoke(exception!!)
-            } else {
-                onPickSuccess.invoke(result)
-            }
-        }
-
-        @Throws(IOException::class)
-        private fun resultBitmap(source: Uri): Bitmap {
-            return when (scaleType) {
-                PicPicker.KEEP_RATIO -> ImageUtils.decodeAndResizeImageUri(context, source, pictureSize)
-                PicPicker.CROP -> ImageUtils.decodeAndCropImageUri(context, source, pictureSize)
-            //TODO: complete implementation
-                PicPicker.SCALE_XY -> ImageUtils.decodeAndResizeImageUri(context, source, pictureSize)
-                else -> ImageUtils.decodeAndResizeImageUri(context, source, pictureSize)
-            }
-        }
-
-        @Throws(IOException::class)
-        private fun resultFile(bitmap: Bitmap): File {
-            var outStream: FileOutputStream? = null
-            val vDestFile = FileUtils.createPictureFile(context, fileName)
-            try {
-                outStream = FileOutputStream(vDestFile)
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outStream)
-            } finally {
-                outStream?.let { outStream.close() };
-            }
-            return vDestFile
-        }
-
-        private fun resultBytes(bitmap: Bitmap): ByteArray? {
-            val outStream = ByteArrayOutputStream()
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outStream)
-            return outStream.toByteArray()
         }
     }
 }
