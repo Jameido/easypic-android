@@ -90,7 +90,8 @@ public class FileUtils {
         if (src.getPath().equals(dst.getAbsolutePath())) {
             return true;
         } else {
-            Bitmap bmp = ImageUtils.decodeAndResizeImageUri(context, src, requiredSize);
+            ImageProcessor vImageProcessor = new ImageProcessor();
+            Bitmap bmp = vImageProcessor.decodeAndResizeImageUri(context, src, requiredSize);
             FileOutputStream out = null;
             try {
                 out = new FileOutputStream(dst);

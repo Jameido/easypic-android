@@ -49,11 +49,12 @@ class ProcessResultTask(context: Context, private val picPickerImpl: PicPickerIm
     private fun resultBitmap(source: Uri): Bitmap {
         val context = contextRef.get()
         context?.let {
+            val imageProcessor = ImageProcessor()
             return when (picPickerImpl.scaleType) {
-                PicPicker.KEEP_RATIO -> ImageUtils.decodeAndResizeImageUri(it, source, picPickerImpl.pictureSize)
-                PicPicker.CROP -> ImageUtils.decodeAndCropImageUri(it, source, picPickerImpl.pictureSize)
-                PicPicker.SCALE_XY -> ImageUtils.decodeAndScaleXYImageUri(context, source, picPickerImpl.pictureSize)
-                else -> ImageUtils.decodeAndResizeImageUri(it, source, picPickerImpl.pictureSize)
+                PicPicker.KEEP_RATIO -> imageProcessor.decodeAndResizeImageUri(it, source, picPickerImpl.pictureSize)
+                PicPicker.CROP -> imageProcessor.decodeAndCropImageUri(it, source, picPickerImpl.pictureSize)
+                PicPicker.SCALE_XY -> imageProcessor.decodeAndScaleXYImageUri(context, source, picPickerImpl.pictureSize)
+                else -> imageProcessor.decodeAndResizeImageUri(it, source, picPickerImpl.pictureSize)
             }
         }
         throw IOException("Context is null, cannot decode bitmap from taken image")
