@@ -113,6 +113,49 @@ public class ImageUtils {
     }
 
     /**
+     * Decodes the file corresponding to the uri into a bitmap:
+     * - if a required size is specified (> 0) it gets scaled and stretched to it
+     * - if necessary is rotated
+     *
+     * @param context      the given context
+     * @param uri          the uri of the image
+     * @param requiredSize the scale size (0 if to keep original)
+     * @return the resulting bitmap
+     * @throws IOException thrown if an error happens in the process
+     */
+    public static Bitmap decodeAndScaleXYImageUri(@NonNull final Context context, Uri uri, final int requiredSize)
+            throws IOException {
+        BitmapFactory.Options o = new BitmapFactory.Options();
+        o.inJustDecodeBounds = true;
+        BitmapFactory.decodeStream(context.getContentResolver().openInputStream(uri), null, o);
+
+        int scale = 1;
+
+        if (requiredSize > 0) {
+            int width = o.outWidth;
+            int height = o.outHeight;
+            float ratioBitmap = (float) width / (float) height;
+            int biggerSize = ratioBitmap <= 1 ? height : width;
+            scale = biggerSize / requiredSize;
+        }
+
+        BitmapFactory.Options o2 = new BitmapFactory.Options();
+        o2.inSampleSize = (int) Math.ceil(scale);
+        o2.inJustDecodeBounds = false;
+
+        Bitmap rotatedBitmap = rotateImageIfRequired(context, BitmapFactory.decodeStream(context.getContentResolver().openInputStream(uri), null, o2), uri);
+
+        int width = requiredSize;
+        int height = requiredSize;
+        if (requiredSize == 0) {
+            width = rotatedBitmap.getWidth();
+            height = rotatedBitmap.getHeight();
+        }
+
+        return Bitmap.createBitmap(rotatedBitmap, 0, 0, width, height);
+    }
+
+    /**
      * Check the EXIF orientation property of the original file and then if necessary rotates the
      * passed bitmap.
      *

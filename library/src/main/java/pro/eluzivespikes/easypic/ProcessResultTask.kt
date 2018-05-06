@@ -52,8 +52,7 @@ class ProcessResultTask(context: Context, private val picPickerImpl: PicPickerIm
             return when (picPickerImpl.scaleType) {
                 PicPicker.KEEP_RATIO -> ImageUtils.decodeAndResizeImageUri(it, source, picPickerImpl.pictureSize)
                 PicPicker.CROP -> ImageUtils.decodeAndCropImageUri(it, source, picPickerImpl.pictureSize)
-            //TODO: complete implementation
-                PicPicker.SCALE_XY -> ImageUtils.decodeAndResizeImageUri(context, source, picPickerImpl.pictureSize)
+                PicPicker.SCALE_XY -> ImageUtils.decodeAndScaleXYImageUri(context, source, picPickerImpl.pictureSize)
                 else -> ImageUtils.decodeAndResizeImageUri(it, source, picPickerImpl.pictureSize)
             }
         }
