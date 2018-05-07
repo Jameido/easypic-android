@@ -97,7 +97,7 @@ interface PicPicker {
             AnnotationTarget.TYPE_PARAMETER,
             AnnotationTarget.VALUE_PARAMETER
     )
-    @IntDef(KEEP_RATIO, CROP, SCALE_XY)
+    @IntDef(KEEP_RATIO, CROP)//TODO: fix implementation of SCALE_XY
     @Retention(AnnotationRetention.SOURCE)
     annotation class ScaleType
 
