@@ -196,13 +196,14 @@ abstract class PicPickerImpl : PicPicker {
     }
 
     override fun openPicker() {
+        activity?.let {
+            val missingPermissions = CameraUtils.getMissingPermissions(it)
 
-        val missingPermissions = CameraUtils.getMissingPermissions(activity)
-
-        if (missingPermissions.missingPermissions.isEmpty()) {
-            startIntentChooser()
-        } else {
-            requestPermissions(missingPermissions)
+            if (missingPermissions.missingPermissions.isEmpty()) {
+                startIntentChooser()
+            } else {
+                requestPermissions(missingPermissions)
+            }
         }
     }
 
@@ -215,14 +216,15 @@ abstract class PicPickerImpl : PicPicker {
      * Shows the application chooser to the user
      */
     private fun startIntentChooser() {
-        try {
-            initOutputFileUri()
-            showSelector(CameraUtils.getIntentChooser(activity, outputFileUri, showGallery), requestCode)
-        } catch (ex: IOException) {
-            Log.e(TAG, "startIntentChooser: ", ex)
-            onPickFailure.invoke(ex)
+        activity?.let {
+            try {
+                initOutputFileUri()
+                showSelector(CameraUtils.getIntentChooser(it, outputFileUri!!, showGallery), requestCode)
+            } catch (ex: IOException) {
+                Log.e(TAG, "startIntentChooser: ", ex)
+                onPickFailure.invoke(ex)
+            }
         }
-
     }
 
     /**
@@ -233,8 +235,8 @@ abstract class PicPickerImpl : PicPicker {
      * request
      */
     @TargetApi(Build.VERSION_CODES.M)
-    private fun requestPermissions(missingPermissions: CameraUtils.MissingPermissions) {
-        if (missingPermissions.isRationale) {
+    private fun requestPermissions(missingPermissions: MissingPermissions) {
+        if (missingPermissions.askRationale) {
             requestPermissionsRationale(missingPermissions.missingPermissions.toTypedArray())
         } else {
             requestPermissions(missingPermissions.missingPermissions.toTypedArray(), permissionCode)
