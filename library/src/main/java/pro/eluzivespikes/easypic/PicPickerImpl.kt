@@ -125,13 +125,11 @@ abstract class PicPickerImpl : PicPicker {
     @Throws(IOException::class)
     private fun initOutputFileUri() {
         activity?.let {
-            val photoFile = FileUtils.createPictureTempFile(activity, tempFileName)
-            if (photoFile != null) {
-                outputFileUri = FileProvider.getUriForFile(
-                        it,
-                        authority,
-                        photoFile)
-            }
+            val photoFile = FileUtils.createPictureTempFile(it, tempFileName)
+            outputFileUri = FileProvider.getUriForFile(
+                    it,
+                    authority,
+                    photoFile)
         }
     }
 
@@ -191,8 +189,8 @@ abstract class PicPickerImpl : PicPicker {
                     processResultTask = ProcessResultTask(it, this)
                     processResultTask?.execute(uriFileSrc)
                 }
-            } else {
-                FileUtils.deleteFileFromUri(activity, outputFileUri)
+            } else if (activity != null && outputFileUri != null) {
+                FileUtils.deleteFileFromUri(activity!!, outputFileUri!!)
             }
         }
     }
