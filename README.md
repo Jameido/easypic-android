@@ -4,8 +4,6 @@ An Android library that makes taking pictures from camera or gallery easy as tak
 
 ## Installation
 
-### Requirements
-
 Add the following dependency to build.gradle:
 ```gradle
 dependencies {
@@ -83,9 +81,8 @@ override fun onDestroy() {
 }
 ```
 
-Finally you want to get your images no?
-There are 3 ways to get the images: as Bitmap, array of bytes or File. 
-If you want you can get all of 3, but that's a bit overkill don't you think?
+Finally you want to get your images no?  
+There are 3 ways to get the images: as Bitmap, array of bytes or File. If you want you can get all of 3, but that's a bit overkill don't you think?  
 To get the image and the error pass the handlers to the builder as shown above.
 
 ```kotlin
@@ -100,9 +97,7 @@ private val onPickFailure: (exception: Exception) -> Unit = { exception ->
 
 Depending on the chosen mode/s the result properties will be initialized.
 
-
 ## License
 [MIT](https://github.com/Jameido/easypic-android/blob/dev/LICENSE)
-
 
 Well maybe is not easy as I said before 😇
