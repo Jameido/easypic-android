@@ -13,6 +13,24 @@ dependencies {
 }
 ```
 
+Then include the node below in your app manifest:
+```xml
+<application
+     ...>
+    <provider
+        android:name="android.support.v4.content.FileProvider"
+        android:authorities="${applicationId}.provider"
+        android:exported="false"
+        android:grantUriPermissions="true"
+        tools:replace="android:authorities">
+        <meta-data
+            android:name="android.support.FILE_PROVIDER_PATHS"
+            android:resource="@xml/pictures_paths" />   <!--picture_paths.xml is located inside easypic -->
+    </provider>
+    ...
+</application>
+```
+
 ## Usage
 
 Build a `PickPicker` instance using `PicPickerBuilder`:
@@ -85,3 +103,6 @@ Depending on the chosen mode/s the result properties will be initialized.
 
 ## License
 [MIT](https://github.com/Jameido/easypic-android/blob/dev/LICENSE)
+
+
+Well maybe is not easy as I said before 😇
