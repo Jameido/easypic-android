@@ -5,7 +5,7 @@ apply plugin: 'kotlin-android-extensions'
 android {
     compileSdkVersion 27
     defaultConfig {
-        applicationId "pro.eluzivespikes.easypic.demo"
+        applicationId "xyz.elzspikes.easypic.demo"
         minSdkVersion 21
         targetSdkVersion 27
         versionCode 1
