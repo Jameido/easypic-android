@@ -14,13 +14,16 @@ import java.io.IOException
 import java.util.ArrayList
 
 /**
- * Created by Luca Rossi on 07/05/2018.
+ * @author Jameido
+ * @since 3
+ *
+ * Collection of utils functions for the camera
  */
 object CameraUtils {
 
     /**
-     * Puts together the results of [.getGalleryIntents] and
-     * [.getCameraIntents] to form and intent used to show the
+     * Puts together the results of [getGalleryIntents] and
+     * [getCameraIntents] to form and intent used to show the
      * chooser to the user
      *
      * @param context       the given context
@@ -91,7 +94,6 @@ object CameraUtils {
         val listGallery = context.packageManager.queryIntentActivities(galleryIntent, 0)
 
         for (res in listGallery) {
-            //We remove the documents app
             if ("com.android.documentsui.DocumentsActivity" == res.activityInfo.name) {
                 continue
             }

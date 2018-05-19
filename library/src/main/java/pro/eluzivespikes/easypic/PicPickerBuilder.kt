@@ -5,7 +5,10 @@ import android.support.v4.app.Fragment
 import android.view.View
 
 /**
- * Created by Luca Rossi on 25/04/2018.
+ * @author Jameido
+ * @since 3
+ *
+ * Builder to set the wanted parameters of [PicPicker]
  */
 class PicPickerBuilder {
 
@@ -23,6 +26,7 @@ class PicPickerBuilder {
      * Set the success method to be invoked when the picture has been successfully processed.
      *
      * @param onPickSuccess the success method
+     * @return the builder itself
      */
     fun withSuccessListener(onPickSuccess: (result: PickerResult) -> Unit = { _ -> }): PicPickerBuilder {
         mPicker.onPickSuccess = onPickSuccess
@@ -33,6 +37,7 @@ class PicPickerBuilder {
      * Set the on failure method to be invoked when the pick process fails.
      *
      * @param onPickFailure the failure method
+     * @return the builder itself
      */
     fun withFailureListener(onPickFailure: (exception: Exception) -> Unit = { _ -> }): PicPickerBuilder {
         mPicker.onPickFailure = onPickFailure
@@ -40,10 +45,11 @@ class PicPickerBuilder {
     }
 
     /**
-     * Sets the root view used to display the snackbar when rationale permissions have to
-     * be asked to the user.
+     * Sets the root view used to display the [android.support.design.widget.Snackbar] when
+     * rationale permissions have to be asked to the user.
      *
      * @param rootView the given root view
+     * @return the builder itself
      */
     fun withRootView(rootView: View): PicPickerBuilder {
         mPicker.rootView = rootView
@@ -66,6 +72,7 @@ class PicPickerBuilder {
      * [android.support.v4.app.Fragment.startActivityForResult]
      *
      * @param requestCode the given request code
+     * @return the builder itself
      */
     fun withRequestCode(requestCode: Int): PicPickerBuilder {
         mPicker.requestCode = requestCode
@@ -74,12 +81,19 @@ class PicPickerBuilder {
 
     /**
      * Adds the gallery apps to the options to be shown
+     * @return the builder itself
      */
     fun showGallery(): PicPickerBuilder {
         mPicker.showGallery = true
         return this
     }
 
+    /**
+     * Sets the [PicPickerImpl.fileName]
+     *
+     * @param fileName the file name
+     * @return the builder itself
+     */
     fun withFileName(fileName: String): PicPickerBuilder {
         mPicker.fileName = fileName
         return this
@@ -87,11 +101,12 @@ class PicPickerBuilder {
 
     /**
      * Sets a list of modes on how the resulting picture can be returned, possible values are
-     * [PicPicker.PickerMode.BITMAP]
-     * [PicPicker.PickerMode.BYTES]
-     * [PicPicker.PickerMode.FILE]
+     * [PicPicker.BITMAP]
+     * [PicPicker.BYTES]
+     * [PicPicker.FILE]
      *
      * @param modes the chosen modes
+     * @return the builder itself
      */
     fun withModes(vararg modes: Int): PicPickerBuilder {
         mPicker.modes = modes
@@ -100,17 +115,21 @@ class PicPickerBuilder {
 
     /**
      * Sets how the resulting image should be scaled to the requested size, possible values are:
-     * [PicPicker.ScaleType.KEEP_RATIO]
-     * [PicPicker.ScaleType.CROP]
-     * [PicPicker.ScaleType.SCALE_XY]
+     * [PicPicker.KEEP_RATIO]
+     * [PicPicker.CROP]
+     * [PicPicker.SCALE_XY]
      *
      * @param scaleType
+     * @return the builder itself
      */
     fun withScaleType(@PicPicker.ScaleType scaleType: Int): PicPickerBuilder {
         mPicker.scaleType = scaleType
         return this
     }
 
+    /**
+     * @return the composed [PicPicker]
+     */
     fun build(): PicPicker {
         return mPicker
     }

@@ -11,7 +11,10 @@ import java.io.FileNotFoundException
 import java.io.IOException
 
 /**
- * Created by Luca Rossi on 06/05/2018.
+ * @author Jameido
+ * @since 3
+ *
+ * Class that contains all the functions needed to process the image
  */
 class ImageProcessor {
 

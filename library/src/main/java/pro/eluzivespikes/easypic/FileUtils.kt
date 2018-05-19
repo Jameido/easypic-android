@@ -6,7 +6,10 @@ import java.io.File
 import java.io.IOException
 
 /**
- * Created by Luca Rossi on 06/05/2018.
+ * @author Jameido
+ * @since 3
+ *
+ * Collection of utils functions for managing files
  */
 object FileUtils {
 

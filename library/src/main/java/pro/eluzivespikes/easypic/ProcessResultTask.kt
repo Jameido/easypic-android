@@ -11,11 +11,23 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.lang.ref.WeakReference
 
+/**
+ * @author Jameido
+ * @since 3
+ *
+ * Task that takes the output file uri and processes the image as wanted:
+ * - scale to size
+ * - fix rotation
+ * - return as bitmap, file or bite array
+ */
 class ProcessResultTask(context: Context, private val picPickerImpl: PicPickerImpl) : AsyncTask<Uri, Void, PickerResult>() {
 
     private var exception: Exception? = null
     private var contextRef: WeakReference<Context> = WeakReference(context.applicationContext)
 
+    /**
+     * Process the image
+     */
     override fun doInBackground(vararg params: Uri?): PickerResult {
         val pickerResult = PickerResult()
         if (params.isNotEmpty() && params[0] != null) {
@@ -37,6 +49,11 @@ class ProcessResultTask(context: Context, private val picPickerImpl: PicPickerIm
         return pickerResult
     }
 
+    /**
+     * If [exception] has been initialized in [doInBackground]
+     * failure callback is invoked, otherwise success one is invoked
+     * @param result result of the image processing
+     */
     override fun onPostExecute(result: PickerResult) {
         if (exception != null) {
             picPickerImpl.onPickFailure.invoke(exception!!)
@@ -45,6 +62,13 @@ class ProcessResultTask(context: Context, private val picPickerImpl: PicPickerIm
         }
     }
 
+    /**
+     * Creates a bitmap with the desired modifications from the given file uri
+     *
+     * @param source uri of the image file
+     * @return the processed image
+     * @throws IOException if an error happens in the process
+     */
     @Throws(IOException::class)
     private fun resultBitmap(source: Uri): Bitmap {
         val context = contextRef.get()
@@ -60,6 +84,13 @@ class ProcessResultTask(context: Context, private val picPickerImpl: PicPickerIm
         throw IOException("Context is null, cannot decode bitmap from taken image")
     }
 
+    /**
+     * Takes the given bitmap and stores it in a file with the name specified in
+     * [PicPickerImpl.fileName]
+     * @param bitmap the one processed by [resultBitmap]
+     * @return the created/overridden file
+     * @throws IOException if an error happens in the process
+     */
     @Throws(IOException::class)
     private fun resultFile(bitmap: Bitmap): File {
         val context = contextRef.get()
@@ -77,6 +108,11 @@ class ProcessResultTask(context: Context, private val picPickerImpl: PicPickerIm
         throw IOException("Context is null, cannot decode bitmap from taken image")
     }
 
+    /**
+     * Takes the given bitmap and converts it in a array of bytes
+     * @param bitmap the one processed by [resultBitmap]
+     * @return the array of bytes
+     */
     private fun resultBytes(bitmap: Bitmap): ByteArray? {
         val outStream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outStream)

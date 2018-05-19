@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         findViewById<View>(R.id.button_take_picture)
-                .setOnClickListener { mPicPicker.openPicker() }
+                .setOnClickListener { mPicPicker.showSelector() }
     }
 
     override fun onDestroy() {

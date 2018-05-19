@@ -4,26 +4,10 @@ import android.content.Intent
 import android.support.annotation.IntDef
 
 /**
- * Created by Luca Rossi on 18/03/2018.
+ * @author Jameido
+ * @since 3
  *
- * <p>
- * be sure to add the necessary permissions in the manifest:
- * <uses-permission android:name="android.permission.CAMERA"/>
- * <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
- * <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
- * <p>
- * also don't forget to add the following provider:
- * <application>
- * <provider
- * android:name="android.support.v4.content.FileProvider"
- * android:authorities="{packagename}.fileprovider"
- * android:exported="false"
- * android:grantUriPermissions="true">
- * <meta-data
- * android:name="android.support.FILE_PROVIDER_PATHS"
- * android:resource="@xml/file_paths"/>
- * </provider>
- * </application>
+ * Interface exposing methods to use PicPicker
  */
 interface PicPicker {
 
@@ -39,21 +23,18 @@ interface PicPicker {
     var onPickFailure: (exception: Exception) -> Unit
 
     /**
-     * If the user has given all the necessary permissions opens the picker
-     * If not asks the permissions
+     * Shows the app selector to the user
      */
-    fun openPicker()
-
-
-    /**s
-     * Must be called in {@link Activity#onDestroy()} to avoid memory leaks.
-     */
-    //TODO: switch to Lifecycle observer from Arch Components
-    fun onDestroy()
-
+    fun showSelector()
 
     /**
-     * Called from {@link Activity#onRequestPermissionsResult(int, String[], int[])}
+     * Must be called in [android.app.Activity.onDestroy] to avoid memory leaks.
+     * TODO: switch to Lifecycle observer from Arch Components
+     */
+    fun onDestroy()
+
+    /**
+     * Called from [android.app.Activity.onRequestPermissionsResult]
      * and if the necessary permissions have been given opens the picker.
      *
      * @param requestCode  the permissions request code
@@ -63,15 +44,14 @@ interface PicPicker {
     fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray)
 
     /**
-     * Called from {@link Activity#onActivityResult(int, int, Intent)} and if the request code
-     * matches with the one used processes the result.
+     * Called from [android.app.Activity.onActivityResult]
+     * and if the request code matches with the one used processes the result.
      *
      * @param requestCode the result request code
      * @param resultCode  the result result code
      * @param data        the data from the result
      */
     fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?)
-
 
     /**
      * Used to indicate how the image will be returned
@@ -86,10 +66,10 @@ interface PicPicker {
     @Retention(AnnotationRetention.SOURCE)
     annotation class PickerMode
 
-
     /**
-     * Used to indicate thow the resulting image will be scaled down to the
+     * Used to indicate throw the resulting image will be scaled down to the
      * desired size
+     * TODO: fix implementation of SCALE_XY
      */
     @Target(
             AnnotationTarget.FIELD,
@@ -97,7 +77,7 @@ interface PicPicker {
             AnnotationTarget.TYPE_PARAMETER,
             AnnotationTarget.VALUE_PARAMETER
     )
-    @IntDef(KEEP_RATIO, CROP)//TODO: fix implementation of SCALE_XY
+    @IntDef(KEEP_RATIO, CROP)
     @Retention(AnnotationRetention.SOURCE)
     annotation class ScaleType
 
@@ -114,7 +94,6 @@ interface PicPicker {
          * A file containing the image will be returned
          */
         const val FILE = 2
-
 
         /**
          * Bigger size will be scaled down to required size to keep aspect ratio

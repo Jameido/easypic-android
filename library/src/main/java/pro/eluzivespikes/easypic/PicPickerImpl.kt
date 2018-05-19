@@ -18,7 +18,10 @@ import android.widget.TextView
 import java.io.IOException
 
 /**
- * Created by Luca Rossi on 19/03/2018.
+ * @author Jameido
+ * @since 3
+ *
+ * Abstract implementation of [PicPicker]
  */
 abstract class PicPickerImpl : PicPicker {
 
@@ -34,15 +37,15 @@ abstract class PicPickerImpl : PicPicker {
 
     /**
      * The request code used when invoking
-     * {@link Activity#startActivityForResult(Intent, int)} or
-     * {@link android.support.v4.app.Fragment#startActivityForResult(Intent, int)}.
+     * [Activity.startActivityForResult] or
+     * [android.support.v4.app.Fragment.startActivityForResult]
      */
     internal var requestCode = REQUEST_RESULT_CAMERA_GALLERY_DEFAULT
 
     /**
      * The request code used when asking camera and storage permissions
      */
-    internal var permissionCode = PERMISSION_CAMERA_STORAGE
+    private var permissionCode = PERMISSION_CAMERA_STORAGE
 
     /**
      * The name of the resulting photo file
@@ -74,38 +77,51 @@ abstract class PicPickerImpl : PicPicker {
 
     /**
      *  List of modes on how the resulting picture can be returned, possible values are:
-     * {@link PicPicker#BITMAP}
-     * {@link PicPicker#BYTES}
-     * {@link PicPicker#FILE}
+     * [PicPicker.BITMAP]
+     * [PicPicker.BYTES]
+     * [PicPicker.FILE]
      */
     internal var modes = intArrayOf(PicPicker.BITMAP)
 
     /**
-     * How the resulting image should be scaled to {@link #pictureSize}, possible values are:
-     * {@link ScaleType#KEEP_RATIO}
-     * {@link ScaleType#CROP}
-     * {@link ScaleType#SCALE_XY}
+     * How the resulting image should be scaled to [pictureSize], possible values are:
+     * [PicPicker.KEEP_RATIO]
+     * [PicPicker.CROP]
+     * [PicPicker.SCALE_XY]
      */
     @PicPicker.ScaleType
     internal var scaleType = PicPicker.KEEP_RATIO
 
     /**
-     * Sets the root view used to display the snackbar when rationale permissions have to
+     * Root [View] used to display the [Snackbar] when rationale permissions have to
      * be asked to the user.
      */
     internal var rootView: View? = null
 
-    internal var outputFileUri: Uri? = null
+    /**
+     * [Uri] with the location of the file where the picture is stored.
+     */
+    private var outputFileUri: Uri? = null
 
+    /**
+     * [Activity] used to show selector and as [android.content.Context]
+     */
     internal abstract val activity: Activity?
 
+    /**
+     * Name of the temporary file used to store the picture
+     */
     private var tempFileName = "temp_$fileName"
 
-    //TODO: replace async tasks with corutines
+    /**
+     * [android.os.AsyncTask] that elaborates the taken image with the chosen parameters
+     * TODO: replace async tasks with corutines
+     */
     private var processResultTask: ProcessResultTask? = null
 
     /**
-     * Automatically the value is taken from the activity package name, otherwise it can be overridden
+     * Automatically the value is taken from the activity package name,
+     * otherwise it can be overridden
      */
     private var authority: String = ""
         get() {
@@ -117,7 +133,7 @@ abstract class PicPickerImpl : PicPicker {
         }
 
     /**
-     * Returns the uri of the file where the picture is stored.
+     * Initializes [outputFileUri] with the location of the file where the picture is stored.
      *
      * @throws IOException thrown if an error happens while creating the temporary file where store
      *                     the picture
@@ -135,16 +151,16 @@ abstract class PicPickerImpl : PicPicker {
 
     /**
      * Removes the activity reference when it gets destroyed
-     * Must be called in {@link Activity#onDestroy()} to avoid memory leaks.
+     * Must be called in [Activity.onDestroy] to avoid memory leaks.
      */
     override fun onDestroy() {
         processResultTask?.cancel(true)
     }
 
     /**
-     * Called from {@link Activity#onRequestPermissionsResult(int, String[], int[])}
-     * and if the request code matches with {@link #mPermissionCode} checks if the permissions have
-     * been given and calls the appropriate {@link PicPickerImpl} method.
+     * Called from [Activity.onRequestPermissionsResult]
+     * and if the request code matches with [permissionCode] checks if the permissions have
+     * been given and calls the appropriate [PicPickerImpl] method.
      *
      * @param requestCode  the permissions request code
      * @param permissions  the permissions asked
@@ -163,13 +179,13 @@ abstract class PicPickerImpl : PicPicker {
         }
 
         if (deniedPermissions.isEmpty()) {
-            startIntentChooser()
+            showSelector()
         }
     }
 
     /**
-     * Called from {@link Activity#onActivityResult(int, int, Intent)} and if the request code
-     * matches with {@link #mRequestCode} gets the image, compresses it if needed and copies it
+     * Called from [Activity.onActivityResult] and if the request code
+     * matches with [requestCode] gets the image, compresses it if needed and copies it
      * in the internal storage.
      *
      * @param requestCode the result request code
@@ -195,7 +211,12 @@ abstract class PicPickerImpl : PicPicker {
         }
     }
 
-    override fun openPicker() {
+    /**
+     * If the user has given all the necessary permissions shows the app selector
+     * with [startIntentChooser]
+     * If not asks the permissions via [requestPermissions]
+     */
+    override fun showSelector() {
         activity?.let {
             val missingPermissions = CameraUtils.getMissingPermissions(it)
 
@@ -207,19 +228,28 @@ abstract class PicPickerImpl : PicPicker {
         }
     }
 
+    /**
+     * Request the necessary permissions to the user
+     * @param permissions list of permissions to ask
+     * @param requestCode code used to request the permissions
+     */
     internal abstract fun requestPermissions(permissions: Array<String>, requestCode: Int)
 
-    internal abstract fun showSelector(intent: Intent, requestCode: Int)
-
+    /**
+     * Show the application selector to the user
+     * @param intent the selector intent
+     * @param requestCode code used to invoke the activity result
+     */
+    internal abstract fun startIntentChooser(intent: Intent, requestCode: Int)
 
     /**
-     * Shows the application chooser to the user
+     * Init the output file and show the application selector to the user
      */
     private fun startIntentChooser() {
         activity?.let {
             try {
                 initOutputFileUri()
-                showSelector(CameraUtils.getIntentChooser(it, outputFileUri!!, showGallery), requestCode)
+                startIntentChooser(CameraUtils.getIntentChooser(it, outputFileUri!!, showGallery), requestCode)
             } catch (ex: IOException) {
                 Log.e(TAG, "startIntentChooser: ", ex)
                 onPickFailure.invoke(ex)
