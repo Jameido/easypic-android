@@ -1,8 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-
-ext.support_lib_version = '27.1.0'
+apply plugin: 'org.jetbrains.dokka'
 
 android {
     compileSdkVersion 27
@@ -24,6 +23,20 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    sourceSets {
+        main.kotlin.srcDirs += 'src/main/java'
+        test.kotlin.srcDirs += 'src/test/java'
+    }
+}
+
+dokka {
+    outputDirectory = "$buildDir/docs"
+}
+
+sourceSets {
+    main.java.srcDirs += 'src/main/java'
+    test.java.srcDirs += 'src/test/java'
 }
 
 dependencies {

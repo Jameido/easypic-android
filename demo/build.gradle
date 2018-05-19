@@ -2,8 +2,6 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
-ext.support_lib_version = '27.1.0'
-
 android {
     compileSdkVersion 27
     defaultConfig {
