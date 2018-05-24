@@ -95,7 +95,7 @@ class ImageProcessor {
             cropSize = rotatedBitmap.width
             cropY = (rotatedBitmap.height - rotatedBitmap.width) / 2
         } else {
-            cropSize = rotatedBitmap.width
+            cropSize = rotatedBitmap.height
             cropX = (rotatedBitmap.width - rotatedBitmap.height) / 2
         }
 
@@ -155,24 +155,23 @@ class ImageProcessor {
      * @return the resulting bitmap after manipulation
      */
     private fun rotateImageIfRequired(context: Context, bmp: Bitmap, imageUri: Uri): Bitmap {
-        return try {
+        try {
             val contentResolver = context.contentResolver
             contentResolver?.let {
                 val ei = ExifInterface(it.openInputStream(imageUri))
                 val orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED)
 
-                when (orientation) {
+                return when (orientation) {
                     ExifInterface.ORIENTATION_ROTATE_90 -> rotateBitmap(bmp, 90F)
                     ExifInterface.ORIENTATION_ROTATE_180 -> rotateBitmap(bmp, 180F)
                     ExifInterface.ORIENTATION_ROTATE_270 -> rotateBitmap(bmp, 270F)
                     else -> bmp
                 }
             }
-            return bmp
         } catch (ioEx: FileNotFoundException) {
             Log.e(TAG, "Rotate Image EXIF: ", ioEx)
-            bmp
         }
+        return bmp
     }
 
     /**
