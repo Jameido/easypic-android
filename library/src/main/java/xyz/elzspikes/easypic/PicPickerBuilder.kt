@@ -45,6 +45,18 @@ class PicPickerBuilder {
     }
 
     /**
+     * Set the listener to be called al the end of picker process.
+     * Is used for Java compatibility
+     *
+     * @param onPickResultListener the result listener
+     * @return the builder itself
+     */
+    fun withResultListener(onPickResultListener: OnPickResultListener): PicPickerBuilder {
+        mPicker.onPickResultListener = onPickResultListener
+        return this
+    }
+
+    /**
      * Sets the root view used to display the [android.support.design.widget.Snackbar] when
      * rationale permissions have to be asked to the user.
      *

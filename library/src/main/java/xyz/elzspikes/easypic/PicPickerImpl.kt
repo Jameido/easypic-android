@@ -35,7 +35,13 @@ abstract class PicPickerImpl : PicPicker {
 
     override var onPickSuccess: (result: PickerResult) -> Unit = { _ -> }
     override var onPickFailure: (exception: Exception) -> Unit = { _ -> }
+    override var onPickResultListener = object : OnPickResultListener {
+        override fun onPicPickSuccess(result: PickerResult) {
+        }
 
+        override fun onPicPickFailure(exception: Exception) {
+        }
+    }
     /**
      * The request code used when invoking
      * [Activity.startActivityForResult] or

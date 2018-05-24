@@ -57,8 +57,10 @@ class ProcessResultTask(context: Context, private val picPickerImpl: PicPickerIm
     override fun onPostExecute(result: PickerResult) {
         if (exception != null) {
             picPickerImpl.onPickFailure.invoke(exception!!)
+            picPickerImpl.onPickResultListener.onPicPickFailure(exception!!)
         } else {
             picPickerImpl.onPickSuccess.invoke(result)
+            picPickerImpl.onPickResultListener.onPicPickSuccess(result)
         }
     }
 

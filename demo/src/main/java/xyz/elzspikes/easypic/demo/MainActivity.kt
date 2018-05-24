@@ -11,7 +11,6 @@ import android.widget.Toast
 import xyz.elzspikes.easypic.PicPicker
 import xyz.elzspikes.easypic.PicPickerBuilder
 import xyz.elzspikes.easypic.PickerResult
-import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
 

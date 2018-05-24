@@ -23,6 +23,11 @@ interface PicPicker {
     var onPickFailure: (exception: Exception) -> Unit
 
     /**
+     * Same as [onPickSuccess] and [onPickFailure] but is used for Java compatibility
+     */
+    var onPickResultListener: OnPickResultListener
+
+    /**
      * Shows the app selector to the user
      */
     fun showSelector()
