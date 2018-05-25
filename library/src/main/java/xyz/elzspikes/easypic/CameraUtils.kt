@@ -43,7 +43,7 @@ object CameraUtils {
         }
 
         val targetIntent: Intent
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M)
             targetIntent = Intent()
         else {
             targetIntent = selectorIntents[selectorIntents.size - 1]
