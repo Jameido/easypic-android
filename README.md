@@ -16,8 +16,8 @@ Then include the node below in your app manifest:
 <application
      ...>
     <provider
-        android:name="android.support.v4.content.FileProvider"
-        android:authorities="${applicationId}.provider"
+        android:name="xyz.elzspikes.easypic.PicturesProvider"
+        android:authorities="${applicationId}.easypicprovider"
         android:exported="false"
         android:grantUriPermissions="true"
         tools:replace="android:authorities">
