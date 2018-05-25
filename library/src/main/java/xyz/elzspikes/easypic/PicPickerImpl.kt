@@ -133,7 +133,7 @@ abstract class PicPickerImpl : PicPicker {
     private var authority: String = ""
         get() {
             return if (field.isEmpty() && activity != null) {
-                activity!!.application.packageName + ".provider"
+                activity!!.application.packageName + ".easypicprovider"
             } else {
                 field
             }
