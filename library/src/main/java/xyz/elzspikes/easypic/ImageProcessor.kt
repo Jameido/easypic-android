@@ -142,7 +142,7 @@ class ImageProcessor {
             height = rotatedBitmap.height
         }
 
-        return Bitmap.createBitmap(rotatedBitmap, 0, 0, width, height)
+        return Bitmap.createScaledBitmap(rotatedBitmap, width, height, false);
     }
 
     /**
