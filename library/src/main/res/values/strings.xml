@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name" translatable="false">Easy Photo Picker</string>
 
-    <string name="select_picture_source">Select picture source</string>
-    <string name="permission_rationale">Camera and storage permissions are needed to take a picture.</string>
-    <string name="error_creating_file">Error creating file</string>
+    <string name="easypic_select_picture_source">Select picture source</string>
+    <string name="easypic_permission_rationale">Camera and storage permissions are needed to take a picture.</string>
+    <string name="easypic_error_creating_file">Error creating file</string>
 </resources>

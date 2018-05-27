@@ -15,7 +15,6 @@ import android.support.v4.content.FileProvider
 import android.util.Log
 import android.view.View
 import android.widget.TextView
-import xyz.elzspikes.easypic.R
 import java.io.IOException
 
 /**
@@ -289,7 +288,7 @@ abstract class PicPickerImpl : PicPicker {
     private fun requestPermissionsRationale(missingPermissions: Array<String>) {
         activity?.let {
             if (rootView != null) {
-                val snackBar = Snackbar.make(rootView!!, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
+                val snackBar = Snackbar.make(rootView!!, R.string.easypic_permission_rationale, Snackbar.LENGTH_INDEFINITE)
                 val tv = snackBar.view.findViewById<TextView>(R.id.snackbar_text)
                 tv.setTextColor(Color.WHITE)
                 snackBar.setAction(android.R.string.ok) { requestPermissions(missingPermissions, permissionCode) }
@@ -297,7 +296,7 @@ abstract class PicPickerImpl : PicPicker {
                 snackBar.show()
             } else {
                 AlertDialog.Builder(activity)
-                        .setMessage(R.string.permission_rationale)
+                        .setMessage(R.string.easypic_permission_rationale)
                         .setPositiveButton(android.R.string.ok) { _, _ -> requestPermissions(missingPermissions, permissionCode) }
                         .setNegativeButton(android.R.string.cancel) { _, _ -> }
                         .show()

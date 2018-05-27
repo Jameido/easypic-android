@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- CAMERA -->
-    <string name="select_picture_source">حدد مصدر الصورة</string>
-    <string name="permission_rationale">هناك حاجة إلى أذونات التخزين و الكاميرا لالتقاط صورة.</string>
-    <string name="error_creating_file">حدث خطأ أثناء إنشاء الملف</string>
+    <string name="easypic_select_picture_source">حدد مصدر الصورة</string>
+    <string name="easypic_permission_rationale">هناك حاجة إلى أذونات التخزين و الكاميرا لالتقاط صورة.</string>
+    <string name="easypic_error_creating_file">حدث خطأ أثناء إنشاء الملف</string>
 </resources>

@@ -10,7 +10,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Parcelable
 import android.provider.MediaStore
-import xyz.elzspikes.easypic.R
 import java.io.IOException
 import java.util.ArrayList
 
@@ -50,7 +49,7 @@ object CameraUtils {
             selectorIntents.removeAt(selectorIntents.size - 1)
         }
 
-        val chooserIntent = Intent.createChooser(targetIntent, context.getString(R.string.select_picture_source))
+        val chooserIntent = Intent.createChooser(targetIntent, context.getString(R.string.easypic_select_picture_source))
         chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, selectorIntents.toTypedArray<Parcelable>())
 
         return chooserIntent

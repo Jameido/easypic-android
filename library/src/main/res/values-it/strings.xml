@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- CAMERA -->
-    <string name="select_picture_source">Scegli sorgente foto</string>
-    <string name="permission_rationale">Per scattare la foto è necessario il permesso di usare la fotocamera e scrivere in memoria.</string>
-    <string name="error_creating_file">Errore durante la creazione del file</string>
+    <string name="easypic_select_picture_source">Scegli sorgente foto</string>
+    <string name="easypic_permission_rationale">Per scattare la foto è necessario il permesso di usare la fotocamera e scrivere in memoria.</string>
+    <string name="easypic_error_creating_file">Errore durante la creazione del file</string>
 </resources>
