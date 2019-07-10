@@ -1,6 +1,6 @@
 package xyz.elzspikes.easypic
 
-import android.support.v4.content.FileProvider
+import androidx.core.content.FileProvider
 
 /**
  * @author Jameido

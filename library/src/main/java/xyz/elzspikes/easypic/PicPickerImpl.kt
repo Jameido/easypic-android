@@ -3,18 +3,21 @@ package xyz.elzspikes.easypic
 import android.annotation.TargetApi
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.Uri
 import android.os.Build
+import android.os.StrictMode
 import android.provider.MediaStore
-import android.support.design.widget.Snackbar
-import android.support.v4.content.ContextCompat
-import android.support.v4.content.FileProvider
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import android.util.Log
 import android.view.View
 import android.widget.TextView
+import com.google.android.material.snackbar.Snackbar
+import java.io.File
 import java.io.IOException
 
 /**
@@ -152,6 +155,27 @@ abstract class PicPickerImpl : PicPicker {
                     it,
                     authority,
                     photoFile)
+        }
+    }
+
+
+    /**
+     * WORKAROUND for this crash:
+     * https://console.firebase.google.com/u/0/project/pay-x-1ad8c/crashlytics/app/android:it.nexi.yap/issues/5c1a3492f8b88c2963691545
+     *
+     * Found here:
+     * https://stackoverflow.com/questions/46673683/android-fileprovider-failed-to-find-configured-root-that-contains
+     * @param context
+     * @param file
+     * @return
+     */
+    private fun getFileUri(context: Context, file: File): Uri {
+        return try {
+            FileProvider.getUriForFile(context, authority, file)
+        } catch (e: IllegalArgumentException) {
+            val builder = StrictMode.VmPolicy.Builder()
+            StrictMode.setVmPolicy(builder.build())
+            Uri.fromFile(file)
         }
     }
 

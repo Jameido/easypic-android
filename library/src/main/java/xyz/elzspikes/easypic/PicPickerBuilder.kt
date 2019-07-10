@@ -1,8 +1,8 @@
 package xyz.elzspikes.easypic
 
 import android.app.Activity
-import android.support.v4.app.Fragment
 import android.view.View
+import androidx.fragment.app.Fragment
 
 /**
  * @author Jameido

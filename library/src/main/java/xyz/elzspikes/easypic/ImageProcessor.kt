@@ -5,8 +5,8 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.net.Uri
-import android.support.media.ExifInterface
 import android.util.Log
+import androidx.exifinterface.media.ExifInterface
 import java.io.FileNotFoundException
 import java.io.IOException
 
@@ -157,15 +157,18 @@ class ImageProcessor {
     private fun rotateImageIfRequired(context: Context, bmp: Bitmap, imageUri: Uri): Bitmap {
         try {
             val contentResolver = context.contentResolver
-            contentResolver?.let {
-                val ei = ExifInterface(it.openInputStream(imageUri))
-                val orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED)
+            contentResolver?.let { resolver ->
+                val inputStream = resolver.openInputStream(imageUri)
+                inputStream?.let { stream ->
+                    val ei = ExifInterface(stream)
+                    val orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED)
 
-                return when (orientation) {
-                    ExifInterface.ORIENTATION_ROTATE_90 -> rotateBitmap(bmp, 90F)
-                    ExifInterface.ORIENTATION_ROTATE_180 -> rotateBitmap(bmp, 180F)
-                    ExifInterface.ORIENTATION_ROTATE_270 -> rotateBitmap(bmp, 270F)
-                    else -> bmp
+                    return when (orientation) {
+                        ExifInterface.ORIENTATION_ROTATE_90 -> rotateBitmap(bmp, 90F)
+                        ExifInterface.ORIENTATION_ROTATE_180 -> rotateBitmap(bmp, 180F)
+                        ExifInterface.ORIENTATION_ROTATE_270 -> rotateBitmap(bmp, 270F)
+                        else -> bmp
+                    }
                 }
             }
         } catch (ioEx: FileNotFoundException) {
