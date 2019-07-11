@@ -16,7 +16,7 @@ Then include the node below in your app manifest:
 <application
      ...>
     <provider
-        android:name="xyz.elzspikes.easypic.PicturesProvider"
+        android:name="dev.jameido.easypic.PicturesProvider"
         android:authorities="${applicationId}.easypicprovider"
         android:exported="false"
         android:grantUriPermissions="true"

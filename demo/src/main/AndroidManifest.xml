@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="xyz.elzspikes.easypic.demo">
+    package="dev.jameido.easypic.demo">
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -23,7 +23,7 @@
             </intent-filter>
         </activity>
         <provider
-            android:name="xyz.elzspikes.easypic.PicturesProvider"
+            android:name="dev.jameido.easypic.PicturesProvider"
             android:authorities="${applicationId}.easypicprovider"
             android:exported="false"
             android:grantUriPermissions="true"
