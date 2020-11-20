@@ -32,12 +32,13 @@ class ProcessResultTask(context: Context, private val picPickerImpl: PicPickerIm
         val pickerResult = PickerResult()
         if (params.isNotEmpty() && params[0] != null) {
             try {
-                val bitmap = resultBitmap(params[0]!!)
-                picPickerImpl.modes.forEach { mode: Int ->
-                    when (mode) {
-                        PicPicker.BITMAP -> pickerResult.bitmap = bitmap
-                        PicPicker.BYTES -> pickerResult.bytes = resultBytes(bitmap)
-                        PicPicker.FILE -> pickerResult.file = resultFile(bitmap)
+                resultBitmap(params[0]!!)?.let { bitmap ->
+                    picPickerImpl.modes.forEach { mode: Int ->
+                        when (mode) {
+                            PicPicker.BITMAP -> pickerResult.bitmap = bitmap
+                            PicPicker.BYTES -> pickerResult.bytes = resultBytes(bitmap)
+                            PicPicker.FILE -> pickerResult.file = resultFile(bitmap)
+                        }
                     }
                 }
 
@@ -72,7 +73,7 @@ class ProcessResultTask(context: Context, private val picPickerImpl: PicPickerIm
      * @throws IOException if an error happens in the process
      */
     @Throws(IOException::class)
-    private fun resultBitmap(source: Uri): Bitmap {
+    private fun resultBitmap(source: Uri): Bitmap? {
         val context = contextRef.get()
         context?.let {
             val imageProcessor = ImageProcessor()

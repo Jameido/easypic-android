@@ -32,7 +32,7 @@ class ImageProcessor {
      * @throws IOException thrown if an error happens in the process
      */
     @Throws(IOException::class)
-    fun decodeAndResizeImageUri(context: Context, uri: Uri, requiredSize: Int): Bitmap {
+    fun decodeAndResizeImageUri(context: Context, uri: Uri, requiredSize: Int): Bitmap? {
         val o = BitmapFactory.Options()
         o.inJustDecodeBounds = true
         BitmapFactory.decodeStream(context.contentResolver.openInputStream(uri), null, o)
@@ -51,7 +51,9 @@ class ImageProcessor {
         o2.inSampleSize = scale
         o2.inJustDecodeBounds = false
 
-        return rotateImageIfRequired(context, BitmapFactory.decodeStream(context.contentResolver.openInputStream(uri), null, o2), uri)
+        return BitmapFactory.decodeStream(context.contentResolver.openInputStream(uri), null, o2)?.let {
+            rotateImageIfRequired(context, it, uri)
+        }
     }
 
     /**
@@ -66,7 +68,7 @@ class ImageProcessor {
      * @throws IOException thrown if an error happens in the process
      */
     @Throws(IOException::class)
-    fun decodeAndCropImageUri(context: Context, uri: Uri, requiredSize: Int): Bitmap {
+    fun decodeAndCropImageUri(context: Context, uri: Uri, requiredSize: Int): Bitmap? {
         val o = BitmapFactory.Options()
         o.inJustDecodeBounds = true
         BitmapFactory.decodeStream(context.contentResolver.openInputStream(uri), null, o)
@@ -85,7 +87,9 @@ class ImageProcessor {
         o2.inSampleSize = Math.ceil(scale.toDouble()).toInt()
         o2.inJustDecodeBounds = false
 
-        val rotatedBitmap = rotateImageIfRequired(context, BitmapFactory.decodeStream(context.contentResolver.openInputStream(uri), null, o2), uri)
+        val rotatedBitmap = BitmapFactory.decodeStream(context.contentResolver.openInputStream(uri), null, o2)?.let {
+            rotateImageIfRequired(context, it, uri)
+        } ?: return null
 
         val cropSize: Int
         var cropX = 0
@@ -114,7 +118,7 @@ class ImageProcessor {
      * @throws IOException thrown if an error happens in the process
      */
     @Throws(IOException::class)
-    fun decodeAndScaleXYImageUri(context: Context, uri: Uri, requiredSize: Int): Bitmap {
+    fun decodeAndScaleXYImageUri(context: Context, uri: Uri, requiredSize: Int): Bitmap? {
         val o = BitmapFactory.Options()
         o.inJustDecodeBounds = true
         BitmapFactory.decodeStream(context.contentResolver.openInputStream(uri), null, o)
@@ -133,7 +137,9 @@ class ImageProcessor {
         o2.inSampleSize = Math.ceil(scale.toDouble()).toInt()
         o2.inJustDecodeBounds = false
 
-        val rotatedBitmap = rotateImageIfRequired(context, BitmapFactory.decodeStream(context.contentResolver.openInputStream(uri), null, o2), uri)
+        val rotatedBitmap = BitmapFactory.decodeStream(context.contentResolver.openInputStream(uri), null, o2)?.let {
+            rotateImageIfRequired(context, it, uri)
+        } ?: return null
 
         var width = requiredSize
         var height = requiredSize
