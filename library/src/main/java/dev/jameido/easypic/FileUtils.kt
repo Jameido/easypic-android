@@ -51,12 +51,11 @@ object FileUtils {
         if (vFilename.endsWith(".jpg")) {
             vFilename = vFilename.replace(".jpg", "")
         }
-        return File(
-                context.filesDir.path +
-                        File.separator +
-                        vFilename +
-                        ".jpg"
-        )
+        val imagePath = File(context.filesDir, "pictures")
+        // Make sure the Pictures directory exists.
+        imagePath.mkdirs()
+
+        return File(imagePath, "$vFilename.jpg")
     }
 
     /**

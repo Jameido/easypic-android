@@ -2,7 +2,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
 
 version '0.0.4'
-group 'xyz.elzspikes'
+group 'dev.jameido'
 
 bintray {
 

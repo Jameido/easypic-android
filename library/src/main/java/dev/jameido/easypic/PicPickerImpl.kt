@@ -11,11 +11,11 @@ import android.net.Uri
 import android.os.Build
 import android.os.StrictMode
 import android.provider.MediaStore
-import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
 import android.util.Log
 import android.view.View
 import android.widget.TextView
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import com.google.android.material.snackbar.Snackbar
 import java.io.File
 import java.io.IOException
@@ -279,7 +279,9 @@ abstract class PicPickerImpl : PicPicker {
         activity?.let {
             try {
                 initOutputFileUri()
-                startIntentChooser(CameraUtils.getIntentChooser(it, outputFileUri!!, showGallery), requestCode)
+                val cameraIntent = CameraUtils.getIntentChooser(it, outputFileUri!!, showGallery)
+                cameraIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                startIntentChooser(cameraIntent, requestCode)
             } catch (ex: IOException) {
                 Log.e(TAG, "startIntentChooser: ", ex)
                 onPickFailure.invoke(ex)
