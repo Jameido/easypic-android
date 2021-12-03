@@ -4,14 +4,13 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'org.jetbrains.dokka'
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion '29.0.3'
+    compileSdkVersion rootProject.ext.targetSDK_version
 
     defaultConfig {
         minSdkVersion 17
-        targetSdkVersion 29
-        versionCode 8
-        versionName "0.0.8"
+        targetSdkVersion rootProject.ext.targetSDK_version
+        versionCode 9
+        versionName "0.0.9"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         setProperty("archivesBaseName", "easypic")
