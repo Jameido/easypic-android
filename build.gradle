@@ -2,7 +2,6 @@
 
 buildscript {
     ext.kotlin_version = '1.4.10'
-    ext.support_lib_version = '27.1.1'
     repositories {
         google()
         jcenter()
@@ -34,4 +33,8 @@ allprojects {
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+ext {
+    targetSDK_version = 30
 }
